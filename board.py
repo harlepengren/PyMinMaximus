@@ -573,3 +573,24 @@ class Board:
         fen += f" {self.halfmove_clock} {self.fullmove_number}"
         
         return fen
+    
+    def __str__(self):
+        """Display the board in a human-readable format."""
+        piece_symbols = {
+            EMPTY: '.',
+            WHITE | PAWN: 'P', WHITE | KNIGHT: 'N', WHITE | BISHOP: 'B',
+            WHITE | ROOK: 'R', WHITE | QUEEN: 'Q', WHITE | KING: 'K',
+            BLACK | PAWN: 'p', BLACK | KNIGHT: 'n', BLACK | BISHOP: 'b',
+            BLACK | ROOK: 'r', BLACK | QUEEN: 'q', BLACK | KING: 'k'
+        }
+        
+        print("\n  a b c d e f g h")
+        print("  ---------------")
+        for row in range(7, -1, -1):
+            print(f"{row + 1}|", end=" ")
+            for col in range(8):
+                piece = self.board[row][col]
+                print(piece_symbols.get(piece, '?'), end=" ")
+            print(f"|{row + 1}")
+        print("  ---------------")
+        print("  a b c d e f g h\n")
