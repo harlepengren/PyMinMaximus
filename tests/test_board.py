@@ -114,8 +114,8 @@ class TestBoard(unittest.TestCase):
             board = Board()
             moves = board.generate_legal_moves()
             next_move = random.choice(moves)
-            board.make_move(next_move)
-            board.unmake_move(next_move)
+            undo_info = board.make_move(next_move)
+            board.unmake_move(next_move,undo_info)
         first_time = time.perf_counter() - start_time
 
         start_time = time.perf_counter()
