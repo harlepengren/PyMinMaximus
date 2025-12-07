@@ -20,7 +20,7 @@ def perft(board, depth):
 
 class TestBoard(unittest.TestCase):
     def test_depth(self):
-        board = board.Board()
+        board = Board()
         self.assertEqual(perft(board,1),20)
         self.assertEqual(perft(board,2),400)
         self.assertEqual(perft(board,3),8902)
