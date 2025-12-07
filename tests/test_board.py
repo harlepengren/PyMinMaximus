@@ -25,13 +25,14 @@ class TestBoard(unittest.TestCase):
         print(board)
     
         moves = board.generate_legal_moves()
-        assert(moves > 0)
+        assert(len(moves) > 0)
         print(f"Legal moves available: {len(moves)}")
         print(f"First 5 moves: {moves[:5]}\n")
 
     def test_make_moves(self):
          # Test 2: Make some moves
         print("Test 2: Playing 1.e4 e5 2.Nf3")
+        board = Board()
         board.make_move(Move(1, 4, 3, 4))  # e4
         board.make_move(Move(6, 4, 4, 4))  # e5
         board.make_move(Move(0, 6, 2, 5))  # Nf3
