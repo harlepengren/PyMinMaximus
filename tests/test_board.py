@@ -1,5 +1,5 @@
 import unittest
-import chess
+from board import *
 
 def perft(board, depth):
         """Count leaf nodes at a given depth."""
@@ -20,7 +20,7 @@ def perft(board, depth):
 
 class TestBoard(unittest.TestCase):
     def test_depth(self):
-        board = chess.Board()
+        board = board.Board()
         self.assertEqual(perft(board,1),20)
         self.assertEqual(perft(board,2),400)
         self.assertEqual(perft(board,3),8902)
