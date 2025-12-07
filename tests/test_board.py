@@ -1,5 +1,8 @@
 import unittest
 from board import *
+import chess
+import time
+import random
 
 def perft(board, depth):
         """Count leaf nodes at a given depth."""
@@ -103,6 +106,28 @@ class TestBoard(unittest.TestCase):
         moves = board7.generate_legal_moves()
         promotion_moves = [m for m in moves if m.promotion]
         print(f"Promotion moves available: {len(promotion_moves)}")
+
+    def test_time(self):
+        # Test 7: Test speed vs Python-Chess
+        start_time = time.perf_counter()
+        for _ in range(1000):
+            board = Board()
+            moves = board.generate_legal_moves()
+            next_move = random.choice(moves)
+            board.make_move(next_move)
+            board.unmake_move(next_move)
+        first_time = time.perf_counter() - start_time
+
+        start_time = time.perf_counter()
+        for _ in range(1000):
+            board = chess.Board()
+            moves = list(board.generate_legal_moves())
+            next_move = random.choice(moves)
+            board.push(next_move)
+            board.pop()
+        second_time = time.perf_counter() - start_time
+        assert(first_time < second_time)
+        
 
 if __name__ == '__main__':
     unittest.main()
