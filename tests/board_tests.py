@@ -25,4 +25,6 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(perft(board,2),400)
         self.assertEqual(perft(board,3),8902)
         self.assertEqual(perft(board,4),197281)
-    
+
+if __name__ == '__main__':
+    unittest.main()
