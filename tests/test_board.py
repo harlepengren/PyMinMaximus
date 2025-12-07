@@ -126,6 +126,7 @@ class TestBoard(unittest.TestCase):
             board.push(next_move)
             board.pop()
         second_time = time.perf_counter() - start_time
+        print(f"PyMinMaximus: {first_time} PyChess: {second_time}")
         assert(first_time < second_time)
         
 
