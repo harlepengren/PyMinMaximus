@@ -19,7 +19,7 @@ def perft(board, depth):
         return count
 
 class TestBoard(unittest.TestCase):
-    def TestDepth(self):
+    def test_depth(self):
         board = chess.Board()
         self.assertEqual(perft(board,1),20)
         self.assertEqual(perft(board,2),400)
