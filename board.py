@@ -584,13 +584,15 @@ class Board:
             BLACK | ROOK: 'r', BLACK | QUEEN: 'q', BLACK | KING: 'k'
         }
         
-        print("\n  a b c d e f g h")
-        print("  ---------------")
+        board_string = "\n  a b c d e f g h\n"
+        board_string += "  ---------------\n"
         for row in range(7, -1, -1):
-            print(f"{row + 1}|", end=" ")
+            board_string += f"{row + 1}|"
             for col in range(8):
                 piece = self.board[row][col]
-                print(piece_symbols.get(piece, '?'), end=" ")
-            print(f"|{row + 1}")
-        print("  ---------------")
-        print("  a b c d e f g h\n")
+                board_string += piece_symbols.get(piece, '?')
+            board_string += f"|{row + 1}\n"
+        board_string += "  ---------------\n"
+        board_string += "  a b c d e f g h\n"
+
+        return board_string
