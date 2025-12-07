@@ -590,7 +590,7 @@ class Board:
             board_string += f"{row + 1}|"
             for col in range(8):
                 piece = self.board[row][col]
-                board_string += piece_symbols.get(piece, '?')
+                board_string += piece_symbols.get(piece, '?') + " "
             board_string += f"|{row + 1}\n"
         board_string += "  ---------------\n"
         board_string += "  a b c d e f g h\n"
