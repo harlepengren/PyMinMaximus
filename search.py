@@ -1,5 +1,6 @@
 from evaluation import Evaluator
 from constants import *
+import time
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -263,3 +264,37 @@ class SearchEngine:
             alpha = max(alpha, eval_score)
         
         return best_move, best_eval
+    
+    def iterative_deepening(self, max_depth, time_limit=None):
+        """
+        Iteratively search to increasing depths.
+        """
+        
+        start_time = time.time()
+        best_move = None
+        best_score = float('-inf')
+        
+        for depth in range(1, max_depth + 1):
+            # Check time
+            if time_limit and (time.time() - start_time) > time_limit:
+                break
+            
+            self.nodes_searched = 0
+            move, score = self.find_best_move_alphabeta(depth)
+            
+            elapsed = time.time() - start_time
+            nps = self.nodes_searched / elapsed if elapsed > 0 else 0
+            
+            print(f"Depth {depth}: {move} (score: {score}) "
+                  f"[{self.nodes_searched:,} nodes in {elapsed:.2f}s, "
+                  f"{nps:,.0f} nps]")
+            
+            if move:
+                best_move = move
+                best_score = score
+            
+            # Stop if we found a mate
+            if abs(score) > 19000:
+                break
+        
+        return best_move, best_score
