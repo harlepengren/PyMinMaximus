@@ -1,4 +1,5 @@
 from evaluation import Evaluator
+from constants import *
 
 class SearchEngine:
     def __init__(self, board, evaluator=None):
@@ -70,11 +71,40 @@ class SearchEngine:
         
         return best_move, best_eval
     
+    def order_moves(self, moves):
+        """
+        Order moves to improve alpha-beta pruning.
+        Better moves first = more pruning.
+        """
+        def move_score(move):
+            score = 0
+            
+            # Get the captured piece (if any)
+            captured = self.board.board[move.to_row][move.to_col]
+            
+            if captured != EMPTY:
+                # MVV-LVA: Most Valuable Victim - Least Valuable Attacker
+                captured_value = self.evaluator.piece_values[captured & 7]
+                attacker = self.board.board[move.from_row][move.from_col]
+                attacker_value = self.evaluator.piece_values[attacker & 7]
+                
+                # Prioritize capturing valuable pieces with cheap pieces
+                score += captured_value * 10 - attacker_value
+            
+            # Prioritize promotions
+            if move.promotion:
+                score += 800
+            
+            # Prioritize checks (we'll need to make the move to check this)
+            # For now, we'll skip this to keep it simple
+            
+            return score
+        
+        return sorted(moves, key=move_score, reverse=True)
+    
     def alphabeta(self, depth, alpha, beta, maximizing_player):
         """
-        Minimax with alpha-beta pruning.
-        Alpha: best value for maximizer found so far
-        Beta: best value for minimizer found so far
+        Alpha-beta with move ordering.
         """
         self.nodes_searched += 1
         
@@ -89,6 +119,9 @@ class SearchEngine:
             else:
                 return 0
         
+        # Order moves for better pruning
+        moves = self.order_moves(moves)
+        
         if maximizing_player:
             max_eval = float('-inf')
             for move in moves:
@@ -99,9 +132,8 @@ class SearchEngine:
                 max_eval = max(max_eval, eval_score)
                 alpha = max(alpha, eval_score)
                 
-                # Beta cutoff
                 if beta <= alpha:
-                    break  # Prune remaining moves
+                    break
             
             return max_eval
         else:
@@ -114,9 +146,8 @@ class SearchEngine:
                 min_eval = min(min_eval, eval_score)
                 beta = min(beta, eval_score)
                 
-                # Alpha cutoff
                 if beta <= alpha:
-                    break  # Prune remaining moves
+                    break
             
             return min_eval
     
