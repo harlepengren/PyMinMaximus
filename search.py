@@ -1,11 +1,71 @@
 from evaluation import Evaluator
 from constants import *
 
+class TranspositionTable:
+    def __init__(self, size_mb=64):
+        # Approximate number of entries based on memory
+        self.size = (size_mb * 1024 * 1024) // 100  # rough estimate
+        self.table = {}
+    
+    def get_hash(self, board):
+        """
+        Simple hash of the board position.
+        In a real engine, we'd use Zobrist hashing.
+        """
+        return board.to_fen()
+    
+    def store(self, board, depth, score, flag):
+        """
+        Store a position evaluation.
+        flag: 'exact', 'lowerbound', or 'upperbound'
+        """
+        if len(self.table) >= self.size:
+            # Simple replacement: clear oldest entries
+            self.table.clear()
+        
+        hash_key = self.get_hash(board)
+        self.table[hash_key] = {
+            'depth': depth,
+            'score': score,
+            'flag': flag
+        }
+    
+    def probe(self, board, depth, alpha, beta):
+        """
+        Check if we've seen this position before.
+        Returns (found, score) tuple.
+        """
+        hash_key = self.get_hash(board)
+        
+        if hash_key not in self.table:
+            return False, 0
+        
+        entry = self.table[hash_key]
+        
+        # Only use if searched to equal or greater depth
+        if entry['depth'] < depth:
+            return False, 0
+        
+        score = entry['score']
+        flag = entry['flag']
+        
+        if flag == 'exact':
+            return True, score
+        elif flag == 'lowerbound':
+            if score >= beta:
+                return True, score
+        elif flag == 'upperbound':
+            if score <= alpha:
+                return True, score
+        
+        return False, 0
+
 class SearchEngine:
     def __init__(self, board, evaluator=None):
         self.board = board
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
+        self.tt = TranspositionTable()
     
     def minimax(self, depth, maximizing_player):
         """
@@ -104,12 +164,20 @@ class SearchEngine:
     
     def alphabeta(self, depth, alpha, beta, maximizing_player):
         """
-        Alpha-beta with move ordering.
+        Alpha-beta with transposition table.
         """
+        alpha_orig = alpha
+        
+        # Check transposition table
+        tt_hit, tt_score = self.tt.probe(self.board, depth, alpha, beta)
+        if tt_hit:
+            return tt_score
+        
         self.nodes_searched += 1
         
         if depth == 0:
-            return self.evaluator.evaluate_relative(self.board)
+            score = self.evaluator.evaluate_relative(self.board)
+            return score
         
         moves = self.board.generate_legal_moves()
         
@@ -119,7 +187,6 @@ class SearchEngine:
             else:
                 return 0
         
-        # Order moves for better pruning
         moves = self.order_moves(moves)
         
         if maximizing_player:
@@ -135,6 +202,15 @@ class SearchEngine:
                 if beta <= alpha:
                     break
             
+            # Store in transposition table
+            if max_eval <= alpha_orig:
+                flag = 'upperbound'
+            elif max_eval >= beta:
+                flag = 'lowerbound'
+            else:
+                flag = 'exact'
+            self.tt.store(self.board, depth, max_eval, flag)
+            
             return max_eval
         else:
             min_eval = float('inf')
@@ -148,6 +224,15 @@ class SearchEngine:
                 
                 if beta <= alpha:
                     break
+            
+            # Store in transposition table
+            if min_eval <= alpha_orig:
+                flag = 'upperbound'
+            elif min_eval >= beta:
+                flag = 'lowerbound'
+            else:
+                flag = 'exact'
+            self.tt.store(self.board, depth, min_eval, flag)
             
             return min_eval
     
