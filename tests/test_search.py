@@ -38,8 +38,7 @@ class TestSearch(unittest.TestCase):
             board = Board()
             board.from_fen(puzzle['fen'])
             
-            from test import display_board
-            display_board(board)
+            print(board)
             
             engine = SearchEngine(board)
             best_move, score = engine.iterative_deepening(6, time_limit=5.0)
