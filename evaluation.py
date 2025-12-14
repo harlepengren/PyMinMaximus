@@ -164,3 +164,150 @@ class Evaluator:
         """
         score = self.evaluate(board)
         return score if board.to_move == WHITE else -score
+    
+    def is_endgame(self, board):
+        """
+        Determine if we're in the endgame.
+        Simple heuristic: both sides have no queens, or
+        every side which has a queen has additionally no other pieces or one minor piece maximum.
+        """
+        white_queens = 0
+        black_queens = 0
+        white_minor = 0  # knights and bishops
+        black_minor = 0
+        white_major = 0  # rooks
+        black_major = 0
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece == EMPTY:
+                    continue
+                
+                piece_type = piece & 7
+                color = piece & 24
+                
+                if piece_type == QUEEN:
+                    if color == WHITE:
+                        white_queens += 1
+                    else:
+                        black_queens += 1
+                elif piece_type in [KNIGHT, BISHOP]:
+                    if color == WHITE:
+                        white_minor += 1
+                    else:
+                        black_minor += 1
+                elif piece_type == ROOK:
+                    if color == WHITE:
+                        white_major += 1
+                    else:
+                        black_major += 1
+        
+        # No queens = endgame
+        if white_queens == 0 and black_queens == 0:
+            return True
+        
+        # Queen but limited material = endgame
+        if white_queens == 1 and white_minor + white_major <= 1:
+            if black_queens == 1 and black_minor + black_major <= 1:
+                return True
+        
+        return False
+
+    def evaluate_pawn_structure(self, board):
+        """
+        Evaluate pawn structure features.
+        Returns a score from White's perspective.
+        """
+        score = 0
+        
+        # Analyze each file for pawn structure
+        white_pawns = [[] for _ in range(8)]  # List of rows for each file
+        black_pawns = [[] for _ in range(8)]
+        
+        # Collect pawn positions
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece == (WHITE | PAWN):
+                    white_pawns[col].append(row)
+                elif piece == (BLACK | PAWN):
+                    black_pawns[col].append(row)
+        
+        # Evaluate white pawns
+        for col in range(8):
+            if len(white_pawns[col]) > 1:
+                # Doubled pawns penalty
+                score -= 10 * (len(white_pawns[col]) - 1)
+            
+            if len(white_pawns[col]) > 0:
+                # Check for isolated pawns (no friendly pawns on adjacent files)
+                is_isolated = True
+                if col > 0 and len(white_pawns[col - 1]) > 0:
+                    is_isolated = False
+                if col < 7 and len(white_pawns[col + 1]) > 0:
+                    is_isolated = False
+                
+                if is_isolated:
+                    score -= 15
+                
+                # Check for passed pawns (no enemy pawns ahead on same or adjacent files)
+                for pawn_row in white_pawns[col]:
+                    is_passed = True
+                    
+                    # Check same file
+                    for black_row in black_pawns[col]:
+                        if black_row > pawn_row:
+                            is_passed = False
+                            break
+                    
+                    # Check adjacent files
+                    if is_passed:
+                        for adjacent_col in [col - 1, col + 1]:
+                            if 0 <= adjacent_col < 8:
+                                for black_row in black_pawns[adjacent_col]:
+                                    if black_row > pawn_row:
+                                        is_passed = False
+                                        break
+                    
+                    if is_passed:
+                        # Passed pawn bonus increases with advancement
+                        bonus = 10 + (pawn_row * 10)
+                        score += bonus
+        
+        # Evaluate black pawns (same logic, opposite scoring)
+        for col in range(8):
+            if len(black_pawns[col]) > 1:
+                score += 10 * (len(black_pawns[col]) - 1)
+            
+            if len(black_pawns[col]) > 0:
+                is_isolated = True
+                if col > 0 and len(black_pawns[col - 1]) > 0:
+                    is_isolated = False
+                if col < 7 and len(black_pawns[col + 1]) > 0:
+                    is_isolated = False
+                
+                if is_isolated:
+                    score += 15
+                
+                for pawn_row in black_pawns[col]:
+                    is_passed = True
+                    
+                    for white_row in white_pawns[col]:
+                        if white_row < pawn_row:
+                            is_passed = False
+                            break
+                    
+                    if is_passed:
+                        for adjacent_col in [col - 1, col + 1]:
+                            if 0 <= adjacent_col < 8:
+                                for white_row in white_pawns[adjacent_col]:
+                                    if white_row < pawn_row:
+                                        is_passed = False
+                                        break
+                    
+                    if is_passed:
+                        bonus = 10 + ((7 - pawn_row) * 10)
+                        score -= bonus
+        
+        return score
