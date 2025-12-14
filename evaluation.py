@@ -311,3 +311,86 @@ class Evaluator:
                         score -= bonus
         
         return score
+    
+    def evaluate_king_safety(self, board, is_endgame):
+        """
+        Evaluate king safety.
+        Only important in middlegame.
+        """
+        if is_endgame:
+            return 0
+        
+        score = 0
+        
+        # Find kings
+        white_king_pos = None
+        black_king_pos = None
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece == (WHITE | KING):
+                    white_king_pos = (row, col)
+                elif piece == (BLACK | KING):
+                    black_king_pos = (row, col)
+        
+        if white_king_pos:
+            score += self.evaluate_single_king_safety(board, white_king_pos, WHITE)
+        
+        if black_king_pos:
+            score -= self.evaluate_single_king_safety(board, black_king_pos, BLACK)
+        
+        return score
+    
+    def evaluate_single_king_safety(self, board, king_pos, color):
+        """
+        Evaluate safety for a single king.
+        Returns positive value for safe king.
+        """
+        safety = 0
+        row, col = king_pos
+        
+        # Bonus for castled position
+        if color == WHITE:
+            if row == 0 and (col == 6 or col == 2):
+                safety += 30
+        else:
+            if row == 7 and (col == 6 or col == 2):
+                safety += 30
+        
+        # Evaluate pawn shield
+        if color == WHITE:
+            shield_row = row + 1
+            if shield_row < 8:
+                for dcol in [-1, 0, 1]:
+                    shield_col = col + dcol
+                    if 0 <= shield_col < 8:
+                        piece = board.board[shield_row][shield_col]
+                        if piece == (WHITE | PAWN):
+                            safety += 10
+        else:
+            shield_row = row - 1
+            if shield_row >= 0:
+                for dcol in [-1, 0, 1]:
+                    shield_col = col + dcol
+                    if 0 <= shield_col < 8:
+                        piece = board.board[shield_row][shield_col]
+                        if piece == (BLACK | PAWN):
+                            safety += 10
+        
+        # Penalty for open files near king
+        for dcol in [-1, 0, 1]:
+            check_col = col + dcol
+            if 0 <= check_col < 8:
+                has_pawn = False
+                for check_row in range(8):
+                    piece = board.board[check_row][check_col]
+                    if piece & 7 == PAWN:
+                        has_pawn = True
+                        break
+                
+                if not has_pawn:
+                    safety -= 15  # Open file near king is dangerous
+        
+        return safety
+
