@@ -459,3 +459,80 @@ class Evaluator:
         """
         score = self.evaluate(board)
         return score if board.to_move == WHITE else -score
+    
+    def get_game_phase(self, board):
+        """
+        Calculate game phase (0 = endgame, 24 = opening).
+        Based on material: each piece contributes to the phase.
+        """
+        phase = 0
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece == EMPTY:
+                    continue
+                
+                piece_type = piece & 7
+                
+                if piece_type == KNIGHT or piece_type == BISHOP:
+                    phase += 1
+                elif piece_type == ROOK:
+                    phase += 2
+                elif piece_type == QUEEN:
+                    phase += 4
+        
+        return min(phase, 24)  # Cap at 24 (opening value)
+    
+    def tapered_eval(self, board):
+        """
+        Use tapered evaluation for smooth phase transitions.
+        """
+        phase = self.get_game_phase(board)
+        
+        # Calculate middlegame and endgame scores separately
+        mg_score = 0  # Middlegame score
+        eg_score = 0  # Endgame score
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                
+                if piece == EMPTY:
+                    continue
+                
+                piece_type = piece & 7
+                color = piece & 24
+                is_white = (color == WHITE)
+                
+                # Material value
+                value = self.piece_values[piece_type]
+                
+                # Piece-square values for both phases
+                mg_pst = self.get_piece_square_value(piece_type, row, col, is_white, False)
+                eg_pst = self.get_piece_square_value(piece_type, row, col, is_white, True)
+                
+                if is_white:
+                    mg_score += value + mg_pst
+                    eg_score += value + eg_pst
+                else:
+                    mg_score -= value + mg_pst
+                    eg_score -= value + eg_pst
+        
+        # Add other evaluation terms
+        pawn_score = self.evaluate_pawn_structure(board)
+        mg_score += pawn_score
+        eg_score += pawn_score
+        
+        # King safety only in middlegame
+        mg_score += self.evaluate_king_safety(board, False)
+        
+        bishop_pair = self.evaluate_bishop_pair(board)
+        mg_score += bishop_pair
+        eg_score += bishop_pair
+        
+        # Taper between phases
+        # phase 24 = pure middlegame, phase 0 = pure endgame
+        score = (mg_score * phase + eg_score * (24 - phase)) // 24
+        
+        return score
