@@ -2,6 +2,7 @@ import unittest
 from board import Board
 from evaluation import Evaluator
 from move import Move
+from constants import *
 
 class TestEvaluation(unittest.TestCase):
     def test_evaluation(self):
