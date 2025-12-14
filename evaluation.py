@@ -130,40 +130,6 @@ class Evaluator:
                 return self.king_middlegame_table[table_row][col]
         
         return 0
-
-    def evaluate(self, board):
-        """
-        Evaluate the position from White's perspective.
-        Positive = good for White, Negative = good for Black
-        """
-        score = 0
-        
-        for row in range(8):
-            for col in range(8):
-                piece = board.board[row][col]
-                
-                if piece == EMPTY:
-                    continue
-                
-                piece_type = piece & 7
-                color = piece & 24
-                
-                value = self.piece_values[piece_type]
-                
-                if color == WHITE:
-                    score += value
-                else:
-                    score -= value
-        
-        return score
-    
-    def evaluate_relative(self, board):
-        """
-        Evaluate from the perspective of the side to move.
-        Positive = good for side to move
-        """
-        score = self.evaluate(board)
-        return score if board.to_move == WHITE else -score
     
     def is_endgame(self, board):
         """
@@ -394,3 +360,102 @@ class Evaluator:
         
         return safety
 
+    def evaluate_mobility(self, board):
+        """
+        Evaluate piece mobility.
+        More legal moves = better position.
+        """
+        # Count legal moves for current side
+        our_mobility = len(board.generate_legal_moves())
+        
+        # Switch sides and count opponent mobility
+        board.to_move = BLACK if board.to_move == WHITE else WHITE
+        their_mobility = len(board.generate_legal_moves())
+        board.to_move = BLACK if board.to_move == WHITE else WHITE
+        
+        # Mobility difference
+        mobility_score = (our_mobility - their_mobility) * 2
+        
+        # Return from White's perspective
+        if board.to_move == WHITE:
+            return mobility_score
+        else:
+            return -mobility_score
+        
+    def evaluate_bishop_pair(self, board):
+        """
+        Bonus for having the bishop pair.
+        """
+        white_bishops = 0
+        black_bishops = 0
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece == (WHITE | BISHOP):
+                    white_bishops += 1
+                elif piece == (BLACK | BISHOP):
+                    black_bishops += 1
+        
+        score = 0
+        if white_bishops >= 2:
+            score += 30
+        if black_bishops >= 2:
+            score -= 30
+        
+        return score
+
+    def evaluate(self, board):
+        """
+        Complete position evaluation.
+        Returns score from White's perspective.
+        """
+        score = 0
+        is_endgame = self.is_endgame(board)
+        
+        # 1. Material and piece-square tables
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                
+                if piece == EMPTY:
+                    continue
+                
+                piece_type = piece & 7
+                color = piece & 24
+                is_white = (color == WHITE)
+                
+                # Base material value
+                value = self.piece_values[piece_type]
+                
+                # Piece-square table bonus
+                pst_value = self.get_piece_square_value(
+                    piece_type, row, col, is_white, is_endgame
+                )
+                
+                if is_white:
+                    score += value + pst_value
+                else:
+                    score -= value + pst_value
+        
+        # 2. Pawn structure
+        score += self.evaluate_pawn_structure(board)
+        
+        # 3. King safety (middlegame only)
+        score += self.evaluate_king_safety(board, is_endgame)
+        
+        # 4. Bishop pair
+        score += self.evaluate_bishop_pair(board)
+        
+        # 5. Mobility (expensive, so we scale it down)
+        # Uncomment if you want mobility, but it slows search significantly
+        # score += self.evaluate_mobility(board) // 2
+        
+        return score
+    
+    def evaluate_relative(self, board):
+        """
+        Evaluate from the perspective of the side to move.
+        """
+        score = self.evaluate(board)
+        return score if board.to_move == WHITE else -score
