@@ -95,7 +95,7 @@ def self_play_comparison():
     from evaluation import Evaluator
     
     print("Material-Only vs. Positional Evaluation")
-    print("Playing 1 game at depth 4\n")
+    print("Playing 1 game at depth 5\n")
     
     board = Board()
     
@@ -112,8 +112,8 @@ def self_play_comparison():
     
     positional_evaluator = Evaluator()  # Full evaluation
     
-    engine2 = SearchEngine(board, material_evaluator)
-    engine1 = SearchEngine(board, positional_evaluator)
+    engine1 = SearchEngine(board, material_evaluator)
+    engine2 = SearchEngine(board, positional_evaluator)
     
     move_count = 0
     max_moves = 100
@@ -131,11 +131,11 @@ def self_play_comparison():
         
         if board.to_move == WHITE:
             # Material-only engine
-            best_move, score = engine1.find_best_move_alphabeta(4)
+            best_move, score = engine1.find_best_move_alphabeta(5)
             print(f"{move_count + 1}. Material: {best_move}")
         else:
             # Positional engine
-            best_move, score = engine2.find_best_move_alphabeta(4)
+            best_move, score = engine2.find_best_move_alphabeta(5)
             print(f"{move_count + 1}... Positional: {best_move}")
         
         if best_move:
