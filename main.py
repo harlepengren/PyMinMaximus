@@ -86,66 +86,66 @@ def play_game():
                 break
 
     def self_play_comparison():
-    """
-    Compare material-only vs. positional evaluation.
-    Play the two versions against each other.
-    """
-    from board import Board
-    from search import SearchEngine
-    from evaluation import Evaluator
-    
-    print("Material-Only vs. Positional Evaluation")
-    print("Playing 1 game at depth 4\n")
-    
-    board = Board()
-    
-    # Create two engines
-    material_evaluator = Evaluator()
-    # Disable all positional evaluation
-    material_evaluator.pawn_table = [[0]*8 for _ in range(8)]
-    material_evaluator.knight_table = [[0]*8 for _ in range(8)]
-    material_evaluator.bishop_table = [[0]*8 for _ in range(8)]
-    material_evaluator.rook_table = [[0]*8 for _ in range(8)]
-    material_evaluator.queen_table = [[0]*8 for _ in range(8)]
-    material_evaluator.king_middlegame_table = [[0]*8 for _ in range(8)]
-    material_evaluator.king_endgame_table = [[0]*8 for _ in range(8)]
-    
-    positional_evaluator = Evaluator()  # Full evaluation
-    
-    engine1 = SearchEngine(board, material_evaluator)
-    engine2 = SearchEngine(board, positional_evaluator)
-    
-    move_count = 0
-    max_moves = 100
-    
-    while move_count < max_moves:
-        legal_moves = board.generate_legal_moves()
+        """
+        Compare material-only vs. positional evaluation.
+        Play the two versions against each other.
+        """
+        from board import Board
+        from search import SearchEngine
+        from evaluation import Evaluator
         
-        if len(legal_moves) == 0:
-            if board.is_in_check(board.to_move):
-                winner = "Positional" if board.to_move == WHITE else "Material"
-                print(f"\nCheckmate! {winner} evaluation wins!")
+        print("Material-Only vs. Positional Evaluation")
+        print("Playing 1 game at depth 4\n")
+        
+        board = Board()
+        
+        # Create two engines
+        material_evaluator = Evaluator()
+        # Disable all positional evaluation
+        material_evaluator.pawn_table = [[0]*8 for _ in range(8)]
+        material_evaluator.knight_table = [[0]*8 for _ in range(8)]
+        material_evaluator.bishop_table = [[0]*8 for _ in range(8)]
+        material_evaluator.rook_table = [[0]*8 for _ in range(8)]
+        material_evaluator.queen_table = [[0]*8 for _ in range(8)]
+        material_evaluator.king_middlegame_table = [[0]*8 for _ in range(8)]
+        material_evaluator.king_endgame_table = [[0]*8 for _ in range(8)]
+        
+        positional_evaluator = Evaluator()  # Full evaluation
+        
+        engine1 = SearchEngine(board, material_evaluator)
+        engine2 = SearchEngine(board, positional_evaluator)
+        
+        move_count = 0
+        max_moves = 100
+        
+        while move_count < max_moves:
+            legal_moves = board.generate_legal_moves()
+            
+            if len(legal_moves) == 0:
+                if board.is_in_check(board.to_move):
+                    winner = "Positional" if board.to_move == WHITE else "Material"
+                    print(f"\nCheckmate! {winner} evaluation wins!")
+                else:
+                    print("\nStalemate!")
+                break
+            
+            if board.to_move == WHITE:
+                # Material-only engine
+                best_move, score = engine1.find_best_move_alphabeta(4)
+                print(f"{move_count + 1}. Material: {best_move}")
             else:
-                print("\nStalemate!")
-            break
+                # Positional engine
+                best_move, score = engine2.find_best_move_alphabeta(4)
+                print(f"{move_count + 1}... Positional: {best_move}")
+            
+            if best_move:
+                board.make_move(best_move)
+                move_count += 1
+            else:
+                break
         
-        if board.to_move == WHITE:
-            # Material-only engine
-            best_move, score = engine1.find_best_move_alphabeta(4)
-            print(f"{move_count + 1}. Material: {best_move}")
-        else:
-            # Positional engine
-            best_move, score = engine2.find_best_move_alphabeta(4)
-            print(f"{move_count + 1}... Positional: {best_move}")
-        
-        if best_move:
-            board.make_move(best_move)
-            move_count += 1
-        else:
-            break
-    
-    if move_count >= max_moves:
-        print(f"\nGame drawn by move limit ({max_moves} moves)")
+        if move_count >= max_moves:
+            print(f"\nGame drawn by move limit ({max_moves} moves)")
 
 
 if __name__ == "__main__":
