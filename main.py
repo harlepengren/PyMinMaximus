@@ -112,8 +112,8 @@ def self_play_comparison():
     
     positional_evaluator = Evaluator()  # Full evaluation
     
-    engine1 = SearchEngine(board, material_evaluator)
-    engine2 = SearchEngine(board, positional_evaluator)
+    engine2 = SearchEngine(board, material_evaluator)
+    engine1 = SearchEngine(board, positional_evaluator)
     
     move_count = 0
     max_moves = 100
