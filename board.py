@@ -472,7 +472,9 @@ class Board:
             col_idx = 0
             for char in row:
                 if char.isdigit():
-                    col_idx += int(char)
+                    for _ in range(int(char)):
+                        self.board[7 - row_idx][col_idx] = 0
+                        col_idx += 1
                 else:
                     piece_map = {
                         'P': WHITE | PAWN, 'N': WHITE | KNIGHT, 
