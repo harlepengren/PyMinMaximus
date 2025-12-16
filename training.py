@@ -79,7 +79,7 @@ class EvaluationTuner:
 def run_eval(rating=None):
     evaluator = Evaluator()
     tuner = EvaluationTuner(rating)
-    tuner.test_evaluation_weights(evaluator):
+    tuner.test_evaluation_weights(evaluator)
 
 if __name__ == "__main__":
     run_eval()
