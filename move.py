@@ -25,3 +25,24 @@ class Move:
     
     def __repr__(self):
         return self.__str__()
+    
+def convert_move(move_str:str)->Move:
+    """Convert move from alebraic notation to Move."""
+    if len(move_str) < 4:
+        print("Invalid format. Use: e2e4")
+        return
+    try:
+        from_col = ord(move_str[0]) - ord('a')
+        from_row = int(move_str[1]) - 1
+        to_col = ord(move_str[2]) - ord('a')
+        to_row = int(move_str[3]) - 1
+        
+        # Check for promotion
+        promotion = None
+        if len(move_str) == 5:
+            promo_map = {'q': QUEEN, 'r': ROOK, 'b': BISHOP, 'n': KNIGHT}
+            promotion = promo_map.get(move_str[4])
+        
+        return Move(from_row,from_col,to_row,to_col,promotion)
+    except:
+        print("Invalid move format. Use: e2e4")
