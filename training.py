@@ -34,7 +34,7 @@ class EvaluationTuner:
         current_test = 0
         
         for position in self.test_positions:
-            print(f'Test {current_test} ...')
+            print(f'Test {current_test} (score {score})...')
             current_test += 1
             board = Board()
             board.from_fen(position['fen'])
