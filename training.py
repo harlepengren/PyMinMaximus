@@ -1,0 +1,69 @@
+from board import Board
+from search import SearchEngine
+from evaluation import Evaluator
+
+import pandas as pd
+
+class EvaluationTuner:
+    """
+    Simple tuner for evaluation parameters.
+    In a real engine, you'd use automated tuning methods.
+    """
+    
+    def __init__(self):
+        puzzles = pd.read_csv('puzzles/chess_puzzles_1.csv')
+        puzzle_sample = puzzles.sample(n=100, replace=False)
+
+        self.test_positions = []
+        for current_sample in puzzle_sample:
+            moves = current_sample['Moves'].split()
+            if len(moves) > 1:
+                self.test_positions.append({
+                    'fen': current_sample['FEN'],
+                    'next_move': moves[0]
+                    'best_move': moves[1]
+                    'weight': 1.0
+                })
+    
+    def test_evaluation_weights(self, evaluator):
+        """
+        Test how well the evaluation performs on test positions.
+        """
+        score = 0
+        
+        for position in self.test_positions:
+            board = Board()
+            board.from_fen(position['fen'])
+            board.make_move(position['next_move'])
+            
+            engine = SearchEngine(board, evaluator)
+            best_move, _ = engine.find_best_move_alphabeta(5)
+            
+            if str(best_move) == position['best_move']:
+                score += position['weight']
+        
+        return score
+    
+    def tune_parameters(self):
+        """
+        Simple grid search for parameter tuning.
+        """
+        best_score = 0
+        best_params = None
+        
+        # Try different values for key parameters
+        for doubled_pawn_penalty in [5, 10, 15, 20]:
+            for passed_pawn_bonus in [5, 10, 15, 20]:
+                evaluator = Evaluator()
+                # Modify evaluator parameters here
+                
+                score = self.test_evaluation_weights(evaluator)
+                
+                if score > best_score:
+                    best_score = score
+                    best_params = {
+                        'doubled_pawn': doubled_pawn_penalty,
+                        'passed_pawn': passed_pawn_bonus
+                    }
+        
+        return best_params, best_score
