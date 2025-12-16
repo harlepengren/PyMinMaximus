@@ -11,8 +11,12 @@ class EvaluationTuner:
     In a real engine, you'd use automated tuning methods.
     """
     
-    def __init__(self):
+    def __init__(self, rating=None):
         puzzles = pd.read_csv('puzzles/chess_puzzles_1.csv')
+
+        if rating:
+            puzzles = puzzles[puzzles['Rating'] <= rating]
+
         puzzle_sample = puzzles.sample(n=100, replace=False)
 
         self.test_positions = []
@@ -41,7 +45,7 @@ class EvaluationTuner:
             board.make_move(convert_move(position['next_move']))
             
             engine = SearchEngine(board, evaluator)
-            best_move, _ = engine.find_best_move_alphabeta(5)
+            best_move, _ = engine.find_best_move_alphabeta(4)
             
             if str(best_move) == position['best_move']:
                 score += position['weight']
@@ -72,7 +76,10 @@ class EvaluationTuner:
         
         return best_params, best_score
 
-if __name__ == "__main__":
+def run_eval(rating=None):
     evaluator = Evaluator()
-    tuner = EvaluationTuner()
-    tuner.test_evaluation_weights(evaluator)
+    tuner = EvaluationTuner(rating)
+    tuner.test_evaluation_weights(evaluator):
+
+if __name__ == "__main__":
+    run_eval()
