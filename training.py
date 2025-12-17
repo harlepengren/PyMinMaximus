@@ -30,12 +30,13 @@ class EvaluationTuner:
                     'weight': 1.0
                 })
     
-    def test_evaluation_weights(self, evaluator):
+    def test_evaluation_weights(self, evaluator, failure_list=False):
         """
         Test how well the evaluation performs on test positions.
         """
         score = 0
         current_test = 0
+        failure_fen = []
         
         for position in self.test_positions:
             print(f'Test {current_test} (score {score})...')
@@ -49,8 +50,14 @@ class EvaluationTuner:
             
             if str(best_move) == position['best_move']:
                 score += position['weight']
+            else:
+                failure_fen.append(position['fen'])
+        
+        if failure_list:
+            return score, failure_fen
         
         return score
+        
     
     def tune_parameters(self):
         """
@@ -76,7 +83,7 @@ class EvaluationTuner:
         
         return best_params, best_score
 
-def run_eval(rating=None):
+def run_eval(rating=None, failure_list:bool=False):
     evaluator = Evaluator()
     tuner = EvaluationTuner(rating)
     tuner.test_evaluation_weights(evaluator)
