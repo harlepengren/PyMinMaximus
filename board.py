@@ -353,8 +353,11 @@ class Board:
     
     def pop(self):
         """Pop move from move stack."""
-        move, move_info = self.move_stack[len(self.move_stack)-1]
-        self.unmake_move(move,move_info)
+        if len(self.move_stack) > 0:
+            move, move_info = self.move_stack[len(self.move_stack)-1]
+            self.unmake_move(move,move_info)
+        else:
+            print("No moves in the move stack.")
 
     def is_square_attacked(self, row, col, by_color):
         """Check if a square is attacked by pieces of a given color."""
