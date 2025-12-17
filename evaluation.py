@@ -466,7 +466,7 @@ class Evaluator:
         Evaluate from the perspective of the side to move.
         """
         score = self.evaluate(board)
-        return score if board.to_move == WHITE else -score
+        return score if board.to_move != WHITE else -score
     
     def get_game_phase(self, board):
         """
