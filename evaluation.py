@@ -411,7 +411,7 @@ class Evaluator:
         Returns score from White's perspective.
         """
         # 0. Is checkmate
-        moves = board.get_legal_moves()
+        moves = board.generate_legal_moves()
         if len(moves) == 0 and board.is_in_check(board.to_move):
             if WHITE:
                 return 20000
