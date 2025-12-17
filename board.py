@@ -1,11 +1,12 @@
 
-from move import Move
+from move import Move, convert_move
 from constants import *
 
 class Board:
     def __init__(self):
         # 8x8 board, index [0][0] is a1, [7][7] is h8
         self.board = [[EMPTY for _ in range(8)] for _ in range(8)]
+        self.move_stack = []
         
         # Game state
         self.to_move = WHITE
@@ -236,6 +237,8 @@ class Board:
             'halfmove_clock': self.halfmove_clock
         }
         
+        self.move_stack.append((move,undo_info))
+
         piece = self.board[move.from_row][move.from_col]
         piece_type = piece & 7
         
@@ -304,6 +307,8 @@ class Board:
     
     def unmake_move(self, move, undo_info):
         """Unmake a move and restore the previous position."""
+        self.move_stack.pop()
+
         # Switch back to the side that made the move
         self.to_move = BLACK if self.to_move == WHITE else WHITE
         
@@ -340,6 +345,16 @@ class Board:
         self.castling_rights = undo_info['castling_rights']
         self.en_passant_square = undo_info['en_passant_square']
         self.halfmove_clock = undo_info['halfmove_clock']
+
+    def push_uci(self, move_uci:str):
+        """Push UCI move onto the move stack."""
+        move = convert_move(move_uci)
+        self.make_move(move)
+    
+    def pop(self):
+        """Pop move from move stack."""
+        move, move_info = self.move_stack[len(self.move_stack)-1]
+        self.unmake_move(move,move_info)
 
     def is_square_attacked(self, row, col, by_color):
         """Check if a square is attacked by pieces of a given color."""
