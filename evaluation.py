@@ -410,6 +410,14 @@ class Evaluator:
         Complete position evaluation.
         Returns score from White's perspective.
         """
+        # 0. Is checkmate
+        moves = board.get_legal_moves()
+        if len(moves) == 0 and board.is_in_check(board.to_move):
+            if WHITE:
+                return 20000
+            else:
+                return -20000
+
         score = 0
         is_endgame = self.is_endgame(board)
         
