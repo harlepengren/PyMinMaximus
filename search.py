@@ -178,7 +178,7 @@ class SearchEngine:
         
         moves = self.board.generate_legal_moves()
 
-        if depth == 0 or len(moves == 0):
+        if depth == 0 or len(moves) == 0:
             score = self.evaluator.evaluate(self.board)
             return score
         
