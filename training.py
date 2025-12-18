@@ -83,14 +83,15 @@ class EvaluationTuner:
         
         return best_params, best_score
 
-def test_search(board,engine,player):
+def test_search(board,engine,depth):
+    player = board.to_move
     moves = board.generate_legal_moves()
     max_score = 0
     max_move = -100000
 
     for move in moves:
         board.make_move(move)
-        score = engine.minimax(3,not player)
+        score = engine.minimax(depth-1,not player)
         board.pop()
         print(move,score)
 
