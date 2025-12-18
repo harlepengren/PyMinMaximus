@@ -1,7 +1,6 @@
 from board import Board
 from search import SearchEngine
 from evaluation import Evaluator
-from move import convert_move
 
 import pandas as pd
 
@@ -43,7 +42,7 @@ class EvaluationTuner:
             current_test += 1
             board = Board()
             board.from_fen(position['fen'])
-            board.make_move(convert_move(position['next_move']))
+            board.push_uci(position['next_move'])
             
             engine = SearchEngine(board, evaluator)
             best_move, _ = engine.find_best_move_alphabeta(4)
