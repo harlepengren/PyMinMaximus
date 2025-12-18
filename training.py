@@ -98,7 +98,7 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
     score = 0
     for index, current_puzzle in puzzles.iterrows():
         moves = current_puzzle['Moves'].split()
-        if len(moves < 2):
+        if len(moves) < 2:
             continue
 
         board = Board()
