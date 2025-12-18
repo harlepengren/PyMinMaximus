@@ -83,23 +83,43 @@ class EvaluationTuner:
         
         return best_params, best_score
 
-def test_search(board,engine,depth):
-    player = board.to_move
-    moves = board.generate_legal_moves()
-    max_score = 0
-    max_move = -100000
+def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
+    puzzles = pd.read_csv('puzzles/chess_puzzles_1.csv')
 
-    for move in moves:
-        board.make_move(move)
-        score = engine.minimax(depth-1,not player)
-        board.pop()
-        print(move,score)
+    if rating:
+        puzzles = puzzles[puzzles['Rating'] <= rating]
 
-        if score > max_score:
-            max_score = score
-            max_move = move
-    print("=============================")
-    print("Best Move:",max_move, max_score)
+    if theme:
+        puzzles = puzzles[puzzles['Themes'].str.contains(theme)]
+
+    if max_puzzles:
+        puzzles = puzzles.sample(n=max_puzzles)
+
+    score = 0
+    for current_puzzle in puzzles:
+        moves = current_puzzle['Moves'].split()
+        if len(moves < 2):
+            continue
+
+        board = Board()
+        board.from_fen(current_puzzle['FEN'])
+        board.push_uci(moves[0])
+
+        engine = SearchEngine(board)
+        best_move, eval_score = engine.find_best_move_alphabeta(depth)
+
+        if best_move == moves[1]:
+            score += 1
+
+        print(best_move, moves[1], eval_score)
+
+    print(f"Final Score: {score} ({score/len(puzzles)})")
+
+
+
+
+    
+    
 
 def run_eval(rating=None, failure_list:bool=False):
     evaluator = Evaluator()
