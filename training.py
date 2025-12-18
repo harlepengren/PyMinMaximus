@@ -83,6 +83,23 @@ class EvaluationTuner:
         
         return best_params, best_score
 
+def test_search(board,engine,player):
+    moves = board.generate_moves
+    max_score = 0
+    max_move = -100000
+
+    for move in moves:
+        board.make_move(move)
+        score = engine.minimax(3,not player)
+        board.pop()
+        print(move,score)
+
+        if score > max_score:
+            max_score = score
+            max_move = move
+    print("=============================")
+    print("Best Move:",max_move, max_score)
+
 def run_eval(rating=None, failure_list:bool=False):
     evaluator = Evaluator()
     tuner = EvaluationTuner(rating)
