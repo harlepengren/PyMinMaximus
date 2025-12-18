@@ -1,5 +1,5 @@
 
-from move import Move, convert_move
+from move import Move
 from constants import *
 
 class Board:
@@ -348,8 +348,11 @@ class Board:
 
     def push_uci(self, move_uci:str):
         """Push UCI move onto the move stack."""
-        move = convert_move(move_uci)
-        self.make_move(move)
+        possible_moves = self.generate_legal_moves()
+        for current_move in possible_moves:
+            if str(current_move) == move_uci:
+                self.make_move(current_move)
+                return
     
     def pop(self):
         """Pop move from move stack."""
