@@ -1,6 +1,7 @@
 from board import Board
 from search import SearchEngine
 from evaluation import Evaluator
+from tqdm import tqdm
 
 import pandas as pd
 
@@ -96,7 +97,7 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
 
     score = 0
     failures = []
-    for index, current_puzzle in puzzles.iterrows():
+    for index, current_puzzle in tqdm(puzzles.iterrows()):
         moves = current_puzzle['Moves'].split()
         if len(moves) < 2:
             continue
