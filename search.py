@@ -176,17 +176,11 @@ class SearchEngine:
         
         self.nodes_searched += 1
         
-        if depth == 0:
+        moves = self.board.generate_legal_moves()
+
+        if depth == 0 or len(moves == 0):
             score = self.evaluator.evaluate(self.board)
             return score
-        
-        moves = self.board.generate_legal_moves()
-        
-        if len(moves) == 0:
-            if self.board.is_in_check(self.board.to_move):
-                return -20000 + (10 - depth)
-            else:
-                return 0
         
         moves = self.order_moves(moves)
         
