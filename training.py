@@ -108,7 +108,7 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
         engine = SearchEngine(board)
         best_move, eval_score = engine.find_best_move_alphabeta(depth)
 
-        if best_move == moves[1]:
+        if str(best_move) == moves[1]:
             score += 1
 
         print(best_move, moves[1], eval_score)
