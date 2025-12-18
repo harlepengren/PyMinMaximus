@@ -173,10 +173,12 @@ class Evaluator:
         if white_queens == 0 and black_queens == 0:
             return True
         
+        white_limited = (white_queens == 1 and white_minor + white_major <= 1)
+        black_limited = (black_queens == 1 and black_minor + black_major <= 1)
+
         # Queen but limited material = endgame
-        if white_queens == 1 and white_minor + white_major <= 1:
-            if black_queens == 1 and black_minor + black_major <= 1:
-                return True
+        if  white_limited or black_limited:
+            return True
         
         return False
 
