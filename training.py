@@ -117,6 +117,26 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
     print(f"Final Score: {score} ({score/len(puzzles)})")
     return failures
 
+def test_themes(max_puzzles=10):
+    puzzles = pd.read_csv('puzzles/chess_puzzles_1.csv')
+
+    themes = {}
+    for index, current_puzzle in puzzles.iterrows():
+        puzzle_themes = current_puzzle.Themes.split()
+        for current_theme in puzzle_themes:
+            if current_theme in themes:
+                themes[current_theme] += 1
+            else:
+                themes[current_theme] = 1
+
+    theme_score = {}
+    for key in themes.keys():
+        print(key)
+        failures = test_search(None,key,3,max_puzzles)
+        score = (max_puzzles-len(failures))/max_puzzles
+        theme_score[key] = score
+
+    return theme_score
 
 
 
