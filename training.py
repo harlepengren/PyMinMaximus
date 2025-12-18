@@ -96,6 +96,7 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
         puzzles = puzzles.sample(n=max_puzzles)
 
     score = 0
+    failures = []
     for index, current_puzzle in puzzles.iterrows():
         moves = current_puzzle['Moves'].split()
         if len(moves) < 2:
@@ -110,10 +111,11 @@ def test_search(rating=None,theme=None,depth=3,max_puzzles=100):
 
         if str(best_move) == moves[1]:
             score += 1
-
-        print(best_move, moves[1], eval_score)
+        else:
+            failures.append(current_puzzle)
 
     print(f"Final Score: {score} ({score/len(puzzles)})")
+    return failures
 
 
 
