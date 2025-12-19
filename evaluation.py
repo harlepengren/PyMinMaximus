@@ -456,7 +456,7 @@ class Evaluator:
         
         # 5. Mobility (expensive, so we scale it down)
         # Uncomment if you want mobility, but it slows search significantly
-        # score += self.evaluate_mobility(board) // 2
+        score += self.evaluate_mobility(board) // 2
         
         return score
     
