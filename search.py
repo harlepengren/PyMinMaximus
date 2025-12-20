@@ -1,6 +1,7 @@
 from evaluation import Evaluator
 from constants import *
 import time
+from krk_tablebase import KRKTablebase
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -67,6 +68,138 @@ class SearchEngine:
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
+
+        # Add tablebase
+        self.krk_tablebase = None
+        self.load_tablebases()
+
+    def load_tablebases(self):
+        """Load endgame tablebases"""
+        try:
+            self.krk_tablebase = KRKTablebase()
+            self.krk_tablebase.load("tablebase/krk_tablebase.pkl")
+            print("KRK tablebase loaded successfully")
+        except:
+            # Generate if not found
+            print("Generating KRK tablebase...")
+            self.krk_tablebase = KRKTablebase()
+            self.krk_tablebase.generate()
+            self.krk_tablebase.save("tablebase/krk_tablebase.pkl")
+
+    def is_tablebase_position(self, board):
+        """Check if position is in a tablebase"""
+        # Count pieces and material
+        piece_count = 0
+        white_pieces = []
+        black_pieces = []
+        
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                if piece != EMPTY:
+                    piece_count += 1
+                    if (piece & 24) == WHITE:
+                        white_pieces.append(piece & 7)
+                    else:
+                        black_pieces.append(piece & 7)
+        
+        # Check for KRK
+        if piece_count == 3:
+            white_pieces.sort()
+            black_pieces.sort()
+            
+            # White has K+R, Black has K
+            if white_pieces == [KING, ROOK] and black_pieces == [KING]:
+                return 'KRK_white'
+            
+            # Black has K+R, White has K (flip the board mentally)
+            if white_pieces == [KING] and black_pieces == [KING, ROOK]:
+                return 'KRK_black'
+        
+        return None
+    
+    def probe_tablebase(self, board):
+        """
+        Probe endgame tablebases.
+        Returns (score, best_move) or None if not in tablebase.
+        """
+        tb_type = self.is_tablebase_position(board)
+        
+        if tb_type is None:
+            return None
+        
+        if tb_type == 'KRK_white':
+            # Query KRK tablebase
+            result = self.krk_tablebase.probe_from_board(board)
+            if result is None:
+                return None
+            
+            outcome, dtm = result
+            
+            if outcome == self.krk_tablebase.WHITE_WIN:
+                # Convert DTM to score
+                # Use high score that decreases with distance
+                score = 19000 - dtm
+            else:  # DRAW
+                score = 0
+            
+            # Find the best move that maintains this outcome
+            best_move = self.find_tablebase_best_move(board, outcome, dtm)
+            return (score, best_move)
+        
+        elif tb_type == 'KRK_black':
+            # Flip perspective for black
+            result = self.krk_tablebase.probe_from_board(board)
+            if result is None:
+                return None
+            
+            outcome, dtm = result
+            
+            if outcome == self.krk_tablebase.WHITE_WIN:
+                # Black is losing
+                score = -(19000 - dtm)
+            else:
+                score = 0
+            
+            best_move = self.find_tablebase_best_move(board, outcome, dtm)
+            return (score, best_move)
+        
+        return None
+
+    def find_tablebase_best_move(self, board, target_outcome, current_dtm):
+        """
+        Find the best move according to the tablebase.
+        Looks for moves that maintain winning path or quickest mate.
+        """
+        moves = board.generate_legal_moves()
+        best_move = None
+        best_dtm = float('inf')
+        
+        for move in moves:
+            undo_info = board.make_move(move)
+            
+            # Query position after move
+            result = self.krk_tablebase.probe_from_board(board)
+            
+            board.unmake_move(move, undo_info)
+            
+            if result is None:
+                continue
+            
+            outcome, dtm = result
+            
+            # If we're winning, look for quickest mate
+            if outcome == target_outcome:
+                if outcome == self.krk_tablebase.WHITE_WIN:
+                    # Want smallest DTM (quickest mate)
+                    if dtm < best_dtm:
+                        best_dtm = dtm
+                        best_move = move
+                else:  # DRAW
+                    best_move = move
+                    break  # Any drawing move is fine
+        
+        return best_move
     
     def minimax(self, depth, maximizing_player):
         """
@@ -167,6 +300,15 @@ class SearchEngine:
         """
         Alpha-beta with transposition table.
         """
+        # Check tablebase FIRST (before any search)
+        tb_result = self.probe_tablebase(self.board)
+        if tb_result is not None:
+            score, _ = tb_result
+            # Return from current player's perspective
+            if not maximizing_player:
+                score = -score
+            return score
+
         alpha_orig = alpha
         
         # Check transposition table
@@ -235,6 +377,14 @@ class SearchEngine:
         """
         Find the best move using alpha-beta pruning.
         """
+        # Check tablebase
+        tb_result = self.probe_tablebase(self.board)
+        if tb_result is not None:
+            score, best_move = tb_result
+            if best_move is not None:
+                print(f"Tablebase: {best_move} (score: {score})")
+                return best_move, score
+
         self.nodes_searched = 0
         best_move = None
         best_eval = float('-inf')
