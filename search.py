@@ -452,5 +452,5 @@ class SearchEngine:
             # Stop if we found a mate
             if abs(score) > 19000:
                 break
-        
+        print(f"Total Time: {time.time() - start_time}")
         return best_move, best_score
