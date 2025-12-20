@@ -2,6 +2,7 @@ from evaluation import Evaluator
 from constants import *
 import time
 from krk_tablebase import KRKTablebase
+from opening_book import OpeningBook
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -68,6 +69,9 @@ class SearchEngine:
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
+
+        # Opening book
+        self.book = OpeningBook('books/kasparov.bin')
 
         # Add tablebase
         self.krk_tablebase = None
@@ -377,6 +381,14 @@ class SearchEngine:
         """
         Find the best move using alpha-beta pruning.
         """
+        # Check opening book
+        if self.book.is_in_book(self.board):
+            moves = self.board.generate_legal_moves()
+            book_move = self.book.get_book_move(self.board,len(self.board.move_stack))
+            for move in moves:
+                if str(move) == book_move:
+                    return move, 1000
+
         # Check tablebase
         tb_result = self.probe_tablebase(self.board)
         if tb_result is not None:
