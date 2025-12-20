@@ -95,7 +95,8 @@ class BookCreator:
         print(f"{'='*60}")
 
     def encode_games(self,pgn_file):
-        games = pgn.pgn_to_uci(pgn_file)
+        parser = pgn.PGNParser()
+        games = parser.parse_file(pgn_file)
 
         for current_game in games:
             board = Board()
@@ -103,6 +104,6 @@ class BookCreator:
             for index, move in enumerate(current_game.uci_moves):
                 if index > 20:
                     break
-                
+
                 self.add_position(board.to_fen(),move)
                 board.push_uci(move)
