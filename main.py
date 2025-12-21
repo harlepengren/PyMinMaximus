@@ -13,6 +13,7 @@ def play_game(think_time):
     evaluator = Evaluator()
     engine = SearchEngine(board, evaluator)
     time_taken = 0.0
+    time_multiplier = 1
     
     print("Welcome to PyMinMaximus!")
     print("You are White. Enter moves in format: e2e4")
@@ -76,10 +77,12 @@ def play_game(think_time):
                     print("Invalid format. Use: e2e4")
         
         else:
+            time_multiplier += len(board.move_stack) * 0.05
+
             # Engine move
             print(f"\nPyMinMaximus is thinking ({think_time-time_taken} s remaining)...")
             start_time = time.perf_counter()
-            best_move, score = engine.iterative_deepening(5, time_limit=(think_time-time_taken)*0.025)
+            best_move, score = engine.iterative_deepening(5, time_limit=(think_time-time_taken)*0.01*time_multiplier)
             
             if best_move:
                 print(f"PyMinMaximus plays: {best_move} (eval: {score:+d})")
