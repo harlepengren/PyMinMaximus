@@ -305,13 +305,15 @@ class SearchEngine:
         Alpha-beta with transposition table.
         """
         # Check tablebase FIRST (before any search)
-        tb_result = self.probe_tablebase(self.board)
-        if tb_result is not None:
-            score, _ = tb_result
-            # Return from current player's perspective
-            if not maximizing_player:
-                score = -score
-            return score
+        piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
+        if piece_count <= 5:
+            tb_result = self.probe_tablebase(self.board)
+            if tb_result is not None:
+                score, _ = tb_result
+                # Return from current player's perspective
+                if not maximizing_player:
+                    score = -score
+                return score
 
         alpha_orig = alpha
         
@@ -390,12 +392,14 @@ class SearchEngine:
                     return move, 1000
 
         # Check tablebase
-        tb_result = self.probe_tablebase(self.board)
-        if tb_result is not None:
-            score, best_move = tb_result
-            if best_move is not None:
-                print(f"Tablebase: {best_move} (score: {score})")
-                return best_move, score
+        piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
+        if piece_count <= 5:
+            tb_result = self.probe_tablebase(self.board)
+            if tb_result is not None:
+                score, best_move = tb_result
+                if best_move is not None:
+                    print(f"Tablebase: {best_move} (score: {score})")
+                    return best_move, score
 
         self.nodes_searched = 0
         best_move = None
