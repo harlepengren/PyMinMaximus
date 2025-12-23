@@ -5,12 +5,15 @@ from search import SearchEngine
 from evaluation import Evaluator
 from move import Move
 from constants import *
+import time
 
-def play_game():
+def play_game(think_time):
     """Play a game against PyMinMaximus."""
     board = Board()
     evaluator = Evaluator()
     engine = SearchEngine(board, evaluator)
+    time_taken = 0.0
+    time_multiplier = 1
     
     print("Welcome to PyMinMaximus!")
     print("You are White. Enter moves in format: e2e4")
@@ -74,9 +77,12 @@ def play_game():
                     print("Invalid format. Use: e2e4")
         
         else:
+            time_multiplier += len(board.move_stack) * 0.05
+
             # Engine move
-            print("\nPyMinMaximus is thinking...")
-            best_move, score = engine.iterative_deepening(5, time_limit=3.0)
+            print(f"\nPyMinMaximus is thinking ({think_time-time_taken} s remaining)...")
+            start_time = time.perf_counter()
+            best_move, score = engine.iterative_deepening(5, time_limit=(think_time-time_taken)*0.01*time_multiplier)
             
             if best_move:
                 print(f"PyMinMaximus plays: {best_move} (eval: {score:+d})")
@@ -84,6 +90,8 @@ def play_game():
             else:
                 print("PyMinMaximus has no legal moves!")
                 break
+            time_taken += (time.perf_counter() - start_time)
+            
 
 def self_play_comparison():
     """
@@ -149,4 +157,4 @@ def self_play_comparison():
 
 
 if __name__ == "__main__":
-    play_game()
+    play_game(600)
