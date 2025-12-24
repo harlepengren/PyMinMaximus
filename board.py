@@ -7,6 +7,7 @@ class Board:
         # 8x8 board, index [0][0] is a1, [7][7] is h8
         self.board = [[EMPTY for _ in range(8)] for _ in range(8)]
         self.move_stack = []
+        self.num_moves_generated = 0
         
         # Game state
         self.to_move = WHITE
@@ -480,6 +481,8 @@ class Board:
     
     def generate_legal_moves(self):
         """Generate all legal moves for the current position."""
+        self.num_moves_generated += 1
+        
         pseudo_legal = self.generate_pseudo_legal_moves()
         return [move for move in pseudo_legal if self.is_legal_move(move)]
     
