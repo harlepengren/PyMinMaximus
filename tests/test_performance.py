@@ -4,7 +4,7 @@ from search import SearchEngine
 import time
 
 class PerformanceTest(unittest.TestCase):
-    def test_minimaxalphabeta_speed(self):
+    def test_alphabeta_speed(self):
         """Tests the nodes per second of minmaxalphabeta."""
 
         board = Board()
