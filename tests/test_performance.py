@@ -31,7 +31,7 @@ class PerformanceTest(unittest.TestCase):
         board = Board()
         board.from_fen(fen)
         engine = SearchEngine(board)
-        depth = 4
+        depth = 5
 
         bestmove, eval = engine.find_best_move_alphabeta(depth)
         print(f"Generate Legal Moves Calls: {board.num_moves_generated}")
