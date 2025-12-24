@@ -163,7 +163,7 @@ python -m unittest tests.test_search
 - [ ] Multi-threaded search (Lazy SMP)
 - [ ] Time management improvements
 - [ ] AlphaZero-style training pipeline
-- [] Neural network evaluation (supervised learning)
+- [ ] Neural network evaluation (supervised learning)
 - [ ] Self-play reinforcement learning
 - [ ] MCTS integration with neural networks
 
