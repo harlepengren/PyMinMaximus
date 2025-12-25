@@ -86,3 +86,15 @@ class TestBoardPerformance(unittest.TestCase):
         board = Board()
         board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
         get_piece_moves(board,KING)
+
+    def test_move_legal(self):
+        board = Board()
+        board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
+        pseudo_legal = board.generate_pseudo_legal_moves()
+        start = time.perf_counter()
+        for _ in range(1000):
+            moves = [move for move in pseudo_legal if self.is_legal_move(move)]
+        end = time.perf_counter()
+        print("="*60)
+        print("Move Legality Check")
+        print(f"Completed in {end-start} seconds")
