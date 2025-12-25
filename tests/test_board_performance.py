@@ -16,7 +16,7 @@ class TestBoardPerformance(unittest.TestCase):
                     if board.board[row][col] == PAWN:
                         board.generate_pawn_moves(row,col,moves)
                         pawn_counter += 1
-        end = time.perf_counter
+        end = time.perf_counter()
         print("="*60)
         print("Pawn Move Generation Test")
         print(f"{len(moves)} moves generated in {end-start} seconds")
