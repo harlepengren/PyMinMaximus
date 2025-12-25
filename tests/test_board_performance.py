@@ -51,7 +51,7 @@ def get_piece_moves(board, target_piece):
                     num_pieces += 1
     end = time.perf_counter()
     print("="*60)
-    print(f"{get_piece_moves(target_piece)} Move Generation Test")
+    print(f"{get_piece_name(target_piece)} Move Generation Test")
     print(f"{num_pieces} {get_piece_name(target_piece)} tested")
     print(f"{len(moves)} moves generated in {end-start} seconds")
 
@@ -60,7 +60,7 @@ def get_piece_moves(board, target_piece):
 class TestBoardPerformance(unittest.TestCase):
     def test_pawns(self):
         board = Board()
-        pawn_counter, num_moves = get_piece_moves(board,PAWN)        
+        get_piece_moves(board,PAWN)        
 
     def test_bishops(self):
         board = Board()
