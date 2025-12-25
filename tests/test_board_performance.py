@@ -93,7 +93,7 @@ class TestBoardPerformance(unittest.TestCase):
         pseudo_legal = board.generate_pseudo_legal_moves()
         start = time.perf_counter()
         for _ in range(10000):
-            moves = [move for move in pseudo_legal if self.is_legal_move(move)]
+            moves = [move for move in pseudo_legal if board.is_legal_move(move)]
         end = time.perf_counter()
         print("="*60)
         print("Move Legality Check")
