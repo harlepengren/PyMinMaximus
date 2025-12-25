@@ -13,7 +13,7 @@ class TestBoardPerformance(unittest.TestCase):
         for _ in range(10000):
             for row in range(8):
                 for col in range(8):
-                    if self.board[row][col] == PAWN:
+                    if board.board[row][col] == PAWN:
                         board.generate_pawn_moves(row,col,moves)
                         pawn_counter += 1
         end = time.perf_counter
