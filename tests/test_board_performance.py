@@ -19,4 +19,5 @@ class TestBoardPerformance(unittest.TestCase):
         end = time.perf_counter()
         print("="*60)
         print("Pawn Move Generation Test")
+        print("{pawn_counter} pawns tested")
         print(f"{len(moves)} moves generated in {end-start} seconds")
