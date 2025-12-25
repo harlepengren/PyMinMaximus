@@ -33,7 +33,7 @@ class TestBoardPerformance(unittest.TestCase):
         moves = []
 
         board = Board()
-        board.to_fen('8/2b1k3/6b1/8/2B5/8/3K1B2/8 w - - 0 1')
+        board.from_fen('8/2b1k3/6b1/8/2B5/8/3K1B2/8 w - - 0 1')
         start = time.perf_counter()
         for _ in range(10000):
             for row in range(8):
