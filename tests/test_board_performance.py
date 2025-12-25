@@ -13,7 +13,13 @@ class TestBoardPerformance(unittest.TestCase):
         for _ in range(10000):
             for row in range(8):
                 for col in range(8):
-                    if board.board[row][col] == PAWN:
+                    piece = board.board[row][col]
+                
+                    if piece == EMPTY or (piece & 24) != board.to_move:
+                        continue
+                
+                    piece_type = piece & 7
+                    if piece_type == PAWN:
                         board.generate_pawn_moves(row,col,moves)
                         pawn_counter += 1
         end = time.perf_counter()
