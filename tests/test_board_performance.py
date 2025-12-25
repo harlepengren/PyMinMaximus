@@ -24,7 +24,7 @@ def get_piece_moves(board, target_piece):
     moves = []
 
     start = time.perf_counter()
-    for _ in range(1000):
+    for _ in range(10000):
         for row in range(8):
                 for col in range(8):
                     piece = board.board[row][col]
@@ -92,7 +92,7 @@ class TestBoardPerformance(unittest.TestCase):
         board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
         pseudo_legal = board.generate_pseudo_legal_moves()
         start = time.perf_counter()
-        for _ in range(1000):
+        for _ in range(10000):
             moves = [move for move in pseudo_legal if self.is_legal_move(move)]
         end = time.perf_counter()
         print("="*60)
