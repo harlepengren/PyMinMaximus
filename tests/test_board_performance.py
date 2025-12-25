@@ -3,10 +3,27 @@ from board import Board
 import time
 from constants import *
 
+def get_piece_name(piece):
+    piece_type = piece & 7
+
+    if piece_type == PAWN:
+        return "pawn"
+    elif piece_type == KNIGHT:
+        return "knight"
+    elif piece_type == BISHOP:
+        return "bishop"
+    elif piece_type == ROOK:
+        return "rook"
+    elif piece_type == QUEEN:
+        return "queen"
+    elif piece_type == KING:
+        return "king"
+
 def get_piece_moves(board, target_piece):
     num_pieces = 0
     moves = []
 
+    start = time.perf_counter()
     for _ in range(1000):
         for row in range(8):
                 for col in range(8):
@@ -32,27 +49,25 @@ def get_piece_moves(board, target_piece):
                     elif piece_type == KING:
                         board.generate_king_moves(row, col, moves)
                     num_pieces += 1
+    end = time.perf_counter()
+    print("="*60)
+    print(f"{get_piece_moves(target_piece)} Move Generation Test")
+    print(f"{num_pieces} {get_piece_name(target_piece)} tested")
+    print(f"{len(moves)} moves generated in {end-start} seconds")
 
-    return num_pieces, len(moves)
+    return
 
 class TestBoardPerformance(unittest.TestCase):
     def test_pawns(self):
         board = Board()
-        start = time.perf_counter()
-        pawn_counter, num_moves = get_piece_moves(board,PAWN)
-        end = time.perf_counter()
-        print("="*60)
-        print("Pawn Move Generation Test")
-        print(f"{pawn_counter} pawns tested")
-        print(f"{num_moves} moves generated in {end-start} seconds")
+        pawn_counter, num_moves = get_piece_moves(board,PAWN)        
 
     def test_bishops(self):
         board = Board()
         board.from_fen('8/2b1k3/6b1/8/2B5/8/3K1B2/8 w - - 0 1')
-        start = time.perf_counter()
-        bishop_counter, num_moves = get_piece_moves(board,BISHOP)
-        end = time.perf_counter()
-        print("="*60)
-        print("Bishop Move Generation Test")
-        print(f"{bishop_counter} bishops tested")
-        print(f"{num_moves} moves generated in {end-start} seconds")
+        get_piece_moves(board,BISHOP)
+
+    def test_knights(self):
+        board = Board()
+        board.from_fen('8/2bnk3/4n1b1/8/2B2N2/2N5/3K1B2/8 w - - 0 1')
+        get_piece_moves(board,KNIGHT)
