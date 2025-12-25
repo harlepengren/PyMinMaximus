@@ -71,3 +71,18 @@ class TestBoardPerformance(unittest.TestCase):
         board = Board()
         board.from_fen('8/2bnk3/4n1b1/8/2B2N2/2N5/3K1B2/8 w - - 0 1')
         get_piece_moves(board,KNIGHT)
+
+    def test_rooks(self):
+        board = Board()
+        board.from_fen('8/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R7 w - - 0 1')
+        get_piece_moves(board,ROOK)
+
+    def test_queen(self):
+        board = Board()
+        board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
+        get_piece_moves(board,QUEEN)
+    
+    def test_king(self):
+        board = Board()
+        board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
+        get_piece_moves(board,KING)
