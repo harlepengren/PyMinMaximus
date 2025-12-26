@@ -361,7 +361,6 @@ class Board:
             to_col = ord(move_str[2]) - ord('a')
             to_row = int(move_str[3]) - 1
 
-            color = self.board[from_row][from_col] & 24
             piece_type = self.board[from_row][from_col] & 7
         
             # Check for promotion
@@ -382,7 +381,7 @@ class Board:
             else:
                 is_passant = False
 
-            return Move(from_col,from_row,to_col,to_row,promotion,is_castling,is_passant)
+            return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
 
         except:
             print("Invalid format. Use: e2e4")
