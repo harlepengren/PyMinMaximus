@@ -1,5 +1,6 @@
 import unittest
 from board import Board
+from move import Move
 import time
 from constants import *
 
@@ -98,3 +99,32 @@ class TestBoardPerformance(unittest.TestCase):
         print("="*60)
         print("Move Legality Check")
         print(f"Completed in {end-start} seconds")
+
+    def test_make_move(self):
+        board = Board()
+        board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
+
+        # Test board.make_move
+        total_time = 0
+        move = Move(2,4,4,4)
+        for _ in range(10000):
+            start = time.perf_counter()
+            unmake_info = board.make_move(move)
+            end = time.perf_counter()
+            total_time += (end - start)
+            board.unmake_move(move,unmake_info)
+        print("="*60)
+        print("Make Move")
+        print(f"10000 moves in {total_time} s")
+
+        # Push_uci
+        total_time = 0
+        for _ in range(10000):
+            start = time.perf_counter()
+            board.push_uci('e2e4')
+            end = time.perf_counter()
+            total_time += (end - start)
+            board.pop()
+        print("="*60)
+        print("Push UCI")
+        print(f"10000 moves in {total_time} s")
