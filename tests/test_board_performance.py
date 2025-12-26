@@ -58,36 +58,42 @@ def get_piece_moves(board, target_piece):
     return
 
 class TestBoardPerformance(unittest.TestCase):
-    def test_pawns(self):
+    def piece_test(self):
+        print("="*60)
+        print("Test Piece Move Generation")
+
+        # Pawn
         board = Board()
         get_piece_moves(board,PAWN)        
 
-    def test_bishops(self):
+        # Bishops
         board = Board()
         board.from_fen('8/2b1k3/6b1/8/2B5/8/3K1B2/8 w - - 0 1')
         get_piece_moves(board,BISHOP)
 
-    def test_knights(self):
+        # Knights
         board = Board()
         board.from_fen('8/2bnk3/4n1b1/8/2B2N2/2N5/3K1B2/8 w - - 0 1')
         get_piece_moves(board,KNIGHT)
 
-    def test_rooks(self):
+        # Rooks
         board = Board()
         board.from_fen('8/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R7 w - - 0 1')
         get_piece_moves(board,ROOK)
 
-    def test_queen(self):
+        # Queen
         board = Board()
         board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
         get_piece_moves(board,QUEEN)
     
-    def test_king(self):
+        # King
         board = Board()
         board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
         get_piece_moves(board,KING)
 
     def test_move_legal(self):
+        print("="*60)
+        print("Test Legal Moves")
         board = Board()
         board.from_fen('4q3/1rbnk3/4nrb1/8/2B2N2/2N1R3/3K1B2/R1Q5 w - - 0 1')
         pseudo_legal = board.generate_pseudo_legal_moves()
@@ -116,7 +122,6 @@ class TestBoardPerformance(unittest.TestCase):
             board.unmake_move(move,unmake_info)
         print(f"10000 moves in {total_time} s")
 
-        print("="*60)
         print("Push UCI")
         # Push_uci
         total_time = 0
