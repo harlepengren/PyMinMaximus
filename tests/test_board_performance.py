@@ -51,7 +51,6 @@ def get_piece_moves(board, target_piece):
                         board.generate_king_moves(row, col, moves)
                     num_pieces += 1
     end = time.perf_counter()
-    print("="*60)
     print(f"{get_piece_name(target_piece)} Move Generation Test")
     print(f"{num_pieces} {get_piece_name(target_piece)} tested")
     print(f"{len(moves)} moves generated in {end-start} seconds")
