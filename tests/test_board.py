@@ -112,7 +112,7 @@ class TestBoard(unittest.TestCase):
         test_board = Board()
         test_board.from_fen(fen)
 
-        test_moves = [("Basic",'b2b4'),("King Castle",e1g1),("Queen Castle",'e1c1'),("En Passant","c5d6")]
+        test_moves = [("Basic","b2b4"),("King Castle","e1g1"),("Queen Castle","e1c1"),("En Passant","c5d6")]
 
         for test_move in test_moves:
             print("="*60)
