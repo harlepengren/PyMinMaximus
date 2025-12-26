@@ -20,6 +20,7 @@ def perft(board, depth):
 
 class TestBoard(unittest.TestCase):         
     def test_starting_position(self):
+        print("="*60)
         print("Test 1: Starting Position")
         board = Board()
         print(board)
@@ -31,6 +32,7 @@ class TestBoard(unittest.TestCase):
 
     def test_make_moves(self):
          # Test 2: Make some moves
+        print("="*60)
         print("Test 2: Playing 1.e4 e5 2.Nf3")
         board = Board()
         board.make_move(Move(1, 4, 3, 4))  # e4
@@ -40,6 +42,7 @@ class TestBoard(unittest.TestCase):
     
     def test_fen(self):
         # Test 3: FEN notation
+        print("="*60)
         print("Test 3: Loading position from FEN")
         board2 = Board()
         # Famous position: "The Immortal Game" after 10.e5
@@ -51,6 +54,7 @@ class TestBoard(unittest.TestCase):
     
     def test_check(self):
         # Test 4: Check detection
+        print("="*60)
         print("Test 4: Check Detection")
         board3 = Board()
         # Scholar's mate position
@@ -61,6 +65,7 @@ class TestBoard(unittest.TestCase):
         print(f"Legal moves for black: {len(board3.generate_legal_moves())}\n")
 
     def test_depth(self):
+        print("="*60)
         print("Test 5: Perft Verification")
         print("Running perft tests from starting position...")
         board = Board()
@@ -70,8 +75,9 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(perft(board,4),197281)
     
     def test_special_moves(self):
+        print("="*60)
         # Test 6: Special moves
-        print("\nTest 6: Special Moves")
+        print("Test 6: Special Moves")
         
         # En passant
         print("En Passant:")
@@ -106,7 +112,7 @@ class TestBoard(unittest.TestCase):
 
     def test_convert_uci(self):
         print("="*60)
-        print("Test: Convert_UCI")
+        print("Test 7: Convert_UCI")
         fen = 'r1bqkb1r/1pp2p2/2n2n2/pBPpp2p/4P1p1/2NPBN2/PP2QPPP/R3K2R w KQkq d6 0 10'
         board = Board()
         board.from_fen(fen)
