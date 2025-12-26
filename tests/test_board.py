@@ -104,5 +104,27 @@ class TestBoard(unittest.TestCase):
         promotion_moves = [m for m in moves if m.promotion]
         print(f"Promotion moves available: {len(promotion_moves)}")
 
+    def test_convert_uci(self):
+        fen = 'r1bqkb1r/1pp2p2/2n2n2/pBPpp2p/4P1p1/2NPBN2/PP2QPPP/R3K2R w KQkq d6 0 10'
+        board = Board()
+        board.from_fen(fen)
+        print(board)
+        test_board = Board()
+        test_board.from_fen(fen)
+
+        test_moves = [("Basic",'b2b4'),("King Castle",e1g1),("Queen Castle",'e1c1'),("En Passant","c5d6")]
+
+        for test_move in test_moves:
+            print("="*60)
+            print(f"{test_move[0]}: {test_move[1]}")
+            move = board.convert_uci(test_move[1])
+            board.make_move(move)
+
+            test_board.push_uci(test_move[1])
+            self.assertEqual(board.to_fen(),test_board.to_fen())
+            board.pop()
+            test_board.pop()
+
+
 if __name__ == '__main__':
     unittest.main()
