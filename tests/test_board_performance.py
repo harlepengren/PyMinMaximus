@@ -106,11 +106,11 @@ class TestBoardPerformance(unittest.TestCase):
 
         # Test board.make_move
         print("="*60)
-        print("Make Move")
+        print("Convert UCI")
         total_time = 0
-        move = Move(2,4,4,4)
         for _ in range(10000):
             start = time.perf_counter()
+            move = board.convert_uci('e2e4')
             unmake_info = board.make_move(move)
             end = time.perf_counter()
             total_time += (end - start)
