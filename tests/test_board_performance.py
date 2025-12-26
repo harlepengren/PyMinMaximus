@@ -58,7 +58,7 @@ def get_piece_moves(board, target_piece):
     return
 
 class TestBoardPerformance(unittest.TestCase):
-    def piece_test(self):
+    def test_piece(self):
         print("="*60)
         print("Test Piece Move Generation")
 
