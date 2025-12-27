@@ -1,4 +1,4 @@
-from constants import *
+from constants import *    
 
 class Move:
     def __init__(self, from_row, from_col, to_row, to_col, 
@@ -25,4 +25,3 @@ class Move:
     
     def __repr__(self):
         return self.__str__()
-    

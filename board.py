@@ -7,6 +7,7 @@ class Board:
         # 8x8 board, index [0][0] is a1, [7][7] is h8
         self.board = [[EMPTY for _ in range(8)] for _ in range(8)]
         self.move_stack = []
+        self.num_moves_generated = 0
         
         # Game state
         self.to_move = WHITE
@@ -346,8 +347,49 @@ class Board:
         self.en_passant_square = undo_info['en_passant_square']
         self.halfmove_clock = undo_info['halfmove_clock']
 
+    def convert_uci(self, move_str:str)->Move:
+        """Converts a move from UCI to Move. No guarantees that the move
+        is legal."""
+
+        if len(move_str) < 4:
+            print("Invalid format. Use: e2e4")
+            return
+        
+        try:
+            from_col = ord(move_str[0]) - ord('a')
+            from_row = int(move_str[1]) - 1
+            to_col = ord(move_str[2]) - ord('a')
+            to_row = int(move_str[3]) - 1
+
+            piece_type = self.board[from_row][from_col] & 7
+        
+            # Check for promotion
+            promotion = None
+            if len(move_str) == 5:
+                promo_map = {'q': QUEEN, 'r': ROOK, 'b': BISHOP, 'n': KNIGHT}
+                promotion = promo_map.get(move_str[4])
+
+            # Check for castle
+            if piece_type == KING:
+                if (abs(from_col - to_col) > 1) or (abs(from_row - to_row)) > 1:
+                    is_castling = True
+            else:
+                is_castling = False
+
+            if piece_type == PAWN and (from_col != to_col):
+                is_passant = True
+            else:
+                is_passant = False
+
+            return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
+
+        except:
+            print("Invalid format. Use: e2e4")
+            return
+
     def push_uci(self, move_uci:str):
-        """Push UCI move onto the move stack."""
+        """Push UCI move onto the move stack. Note that this is expensive
+        since it generates the list of legal moves."""
         possible_moves = self.generate_legal_moves()
         for current_move in possible_moves:
             if str(current_move) == move_uci:
@@ -480,6 +522,8 @@ class Board:
     
     def generate_legal_moves(self):
         """Generate all legal moves for the current position."""
+        self.num_moves_generated += 1
+
         pseudo_legal = self.generate_pseudo_legal_moves()
         return [move for move in pseudo_legal if self.is_legal_move(move)]
     
