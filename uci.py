@@ -96,7 +96,7 @@ class UCIHandler:
         # Apply moves if present
         if move_start < len(args) and args[move_start] == 'moves':
             for move_str in args[move_start + 1:]:
-                move = self._parse_move(move_str)
+                move = self.board.convert_uci(move_str)
                 if move:
                     self.board.make_move(move)
         
@@ -194,7 +194,7 @@ class UCIHandler:
             )
             
             if book_move_uci:
-                book_move = self._parse_move(book_move_uci)
+                book_move = self.board.convert_uci(book_move_uci)
                 if book_move:
                     return book_move, 0
         
@@ -224,29 +224,6 @@ class UCIHandler:
                 break
         
         return best_move, best_score
-    
-    def _parse_move(self, move_str):
-        """Convert UCI move string to Move object."""
-        # Parse format: e2e4, e7e8q
-        from_col = ord(move_str[0]) - ord('a')
-        from_row = int(move_str[1]) - 1
-        to_col = ord(move_str[2]) - ord('a')
-        to_row = int(move_str[3]) - 1
-        
-        promotion = None
-        if len(move_str) == 5:
-            promo_map = {'q': QUEEN, 'r': ROOK, 'b': BISHOP, 'n': KNIGHT}
-            promotion = promo_map.get(move_str[4].lower())
-        
-        # Find matching legal move
-        legal_moves = self.board.generate_legal_moves()
-        for move in legal_moves:
-            if (move.from_row == from_row and move.from_col == from_col and
-                move.to_row == to_row and move.to_col == to_col):
-                if promotion is None or move.promotion == promotion:
-                    return move
-        
-        return None
     
     def setoption(self, args):
         """Handle 'setoption' command - configure engine options."""
