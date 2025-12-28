@@ -11,7 +11,7 @@ class TestUCIProtocol(unittest.TestCase):
         
         # Start engine process
         self.engine = subprocess.Popen(
-            ['python', 'pyminmaximus.py'],
+            ['python3', 'pyminmaximus.py'],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
