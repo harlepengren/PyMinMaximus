@@ -3,7 +3,7 @@ import time
 from board import Board
 from search import SearchEngine
 from evaluation import Evaluator
-from opening_book import PolyglotBook
+from opening_book import OpeningBook
 from move import Move
 from constants import *
 
@@ -38,7 +38,7 @@ class UCIHandler:
         # Load opening book if enabled
         if self.options['OwnBook'] and self.options['BookFile']:
             try:
-                self.opening_book = PolyglotBook(self.options['BookFile'])
+                self.opening_book = OpeningBook(self.options['BookFile'])
             except:
                 self.opening_book = None
         
