@@ -19,7 +19,7 @@ class UCIHandler:
         # Engine configuration
         self.engine_name = "PyMinMaximus"
         self.engine_version = "1.0"
-        self.author = "Kirk"
+        self.author = "Harlepengren"
         
         # UCI options
         self.options = {
