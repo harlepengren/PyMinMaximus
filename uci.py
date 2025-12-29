@@ -22,7 +22,7 @@ class UCIHandler:
         self.engine_version = "1.0"
         self.author = "Harlepengren"
 
-        bookfile = os.path.join(os.path.abspath(__file__),'books/kasparov.bin')
+        bookfile = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'books/kasparov.bin')
         
         # UCI options
         self.options = {

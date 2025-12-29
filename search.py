@@ -3,6 +3,7 @@ from constants import *
 import time
 from krk_tablebase import KRKTablebase
 from opening_book import OpeningBook
+import os
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -81,14 +82,15 @@ class SearchEngine:
         """Load endgame tablebases"""
         try:
             self.krk_tablebase = KRKTablebase()
-            self.krk_tablebase.load("tablebase/krk_tablebase.pkl")
+            table_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tablebase/krk_tablebase.pkl')
+            self.krk_tablebase.load(table_path)
             print("KRK tablebase loaded successfully")
         except:
             # Generate if not found
             print("Generating KRK tablebase...")
             self.krk_tablebase = KRKTablebase()
             self.krk_tablebase.generate()
-            self.krk_tablebase.save("tablebase/krk_tablebase.pkl")
+            self.krk_tablebase.save(table_path)
 
     def is_tablebase_position(self, board):
         """Check if position is in a tablebase"""
