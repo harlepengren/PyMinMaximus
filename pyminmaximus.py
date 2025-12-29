@@ -10,6 +10,7 @@ from uci import main as uci_main
 if __name__ == "__main__":
     # Check for command line arguments
     if len(sys.argv) > 1:
+        print(sys.argv)
         if sys.argv[1] == '--help' or sys.argv[1] == '-h':
             print("PyMinMaximus Chess Engine")
             print("Usage:")
