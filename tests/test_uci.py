@@ -28,12 +28,16 @@ class TestUCIProtocol(unittest.TestCase):
         
         # Read available output
         output = []
-        try:
-            for line in self.engine.stdout:
-                print(f"← {line.strip()}")
-                output.append(line)
-        except:
-            pass
+        while True:
+            # Check if data is available (0.5 second timeout)
+            ready, _, _ = select.select([self.engine.stdout], [], [], 0.5)
+            if not ready:
+                break
+            line = self.engine.stdout.readline()
+            if not line:
+                break
+            print(f"← {line.strip()}")
+            output.append(line)
         
         return output
         
