@@ -124,6 +124,7 @@ class UCIHandler:
         depth = 6  # Default depth
         wtime = btime = None
         winc = binc = 0
+        increment = 500
         
         i = 0
         while i < len(args):
@@ -156,9 +157,13 @@ class UCIHandler:
         if movetime is None and wtime is not None and btime is not None:
             # Use simple time management: allocate 1/30 of remaining time + increment
             if self.board.to_move == WHITE:
-                movetime = (wtime / 1000) / 30 + (winc / 1000)
+                if winc is not None:
+                    increment = winc
+                movetime = (wtime / 1000) / 30 + (increment / 1000) * self.board.fullmove_number
             else:
-                movetime = (btime / 1000) / 30 + (binc / 1000)
+                if binc is not None:
+                    increment = binc
+                movetime = (btime / 1000) / 30 + (increment / 1000) * self.board.fullmove_number
             
             # Ensure minimum time
             movetime = max(movetime, 0.1)
@@ -186,7 +191,7 @@ class UCIHandler:
         """
         Search with UCI info output.
         """
-        start_time = time.time()
+        start_time = time.perf_counter()
         best_move = None
         best_score = 0
         
@@ -204,13 +209,13 @@ class UCIHandler:
         # Iterative deepening with info output
         for depth in range(1, max_depth + 1):
             # Check time
-            if time_limit and (time.time() - start_time) > time_limit:
+            if time_limit and (time.perf_counter() - start_time) > time_limit:
                 break
             
             self.engine.nodes_searched = 0
             move, score = self.engine.find_best_move_alphabeta(depth, time_limit)
             
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
             nps = int(self.engine.nodes_searched / elapsed) if elapsed > 0 else 0
             
             # Send info to GUI
