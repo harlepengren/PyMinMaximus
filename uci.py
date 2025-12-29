@@ -208,7 +208,7 @@ class UCIHandler:
                 break
             
             self.engine.nodes_searched = 0
-            move, score = self.engine.find_best_move_alphabeta(depth)
+            move, score = self.engine.find_best_move_alphabeta(depth, time_limit)
             
             elapsed = time.time() - start_time
             nps = int(self.engine.nodes_searched / elapsed) if elapsed > 0 else 0
