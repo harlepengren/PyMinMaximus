@@ -64,14 +64,14 @@ class TranspositionTable:
         return False, 0
 
 class SearchEngine:
-    def __init__(self, board, evaluator=None):
+    def __init__(self, board, evaluator=None, book=None):
         self.board = board
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
 
         # Opening book
-        self.book = OpeningBook('books/kasparov.bin')
+        self.book = book if book else OpeningBook('books/kasparov.bin')
 
         # Add tablebase
         self.krk_tablebase = None

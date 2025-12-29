@@ -25,7 +25,7 @@ class UCIHandler:
         self.options = {
             'Hash': 64,  # MB for transposition table
             'OwnBook': True,  # Use opening book
-            'BookFile': 'books/performance.bin',
+            'BookFile': 'books/kasparov.bin',
         }
         
         # Initialize components
