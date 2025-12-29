@@ -1,6 +1,7 @@
 import subprocess
 import time
 import unittest
+import select
 
 class TestUCIProtocol(unittest.TestCase):
     def setUp(self):
