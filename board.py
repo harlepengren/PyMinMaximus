@@ -370,16 +370,14 @@ class Board:
                 promotion = promo_map.get(move_str[4])
 
             # Check for castle
+            is_castling = False
+            is_passant = False
             if piece_type == KING:
                 if (abs(from_col - to_col) > 1) or (abs(from_row - to_row)) > 1:
                     is_castling = True
-            else:
-                is_castling = False
 
             if piece_type == PAWN and (from_col != to_col):
                 is_passant = True
-            else:
-                is_passant = False
 
             return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
 
