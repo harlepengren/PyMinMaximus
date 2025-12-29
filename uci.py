@@ -6,6 +6,7 @@ from evaluation import Evaluator
 from opening_book import OpeningBook
 from move import Move
 from constants import *
+import os
 
 class UCIHandler:
     """
@@ -20,12 +21,14 @@ class UCIHandler:
         self.engine_name = "PyMinMaximus"
         self.engine_version = "1.0"
         self.author = "Harlepengren"
+
+        bookfile = os.path.join(os.path.abspath(__file__),'books/kasparov.bin')
         
         # UCI options
         self.options = {
             'Hash': 64,  # MB for transposition table
             'OwnBook': True,  # Use opening book
-            'BookFile': 'books/kasparov.bin',
+            'BookFile': bookfile,
         }
         
         # Initialize components
