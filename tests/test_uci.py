@@ -69,13 +69,16 @@ class TestUCIProtocol(unittest.TestCase):
         #self.assertIsNotNone('bestmove' in line for line in output), "Missing bestmove"
         
     def tearDown(self):
-        # Cleanup
-        self.send_command('quit')
-        self.engine.wait(timeout=2)
-
-        print("\n" + "="*60)
-        print("All UCI tests passed! ✓")
-        print("="*60)
+        try:
+            self.send_command('quit')
+            self.engine.wait(timeout=2)
+        except:
+            self.engine.kill()  # Force kill if it doesn't quit
+        finally:
+            # Close all pipes
+            self.engine.stdin.close()
+            self.engine.stdout.close()
+            self.engine.stderr.close()
 
         return super().tearDown()
 
