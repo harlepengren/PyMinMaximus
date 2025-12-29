@@ -250,6 +250,7 @@ class UCIHandler:
         while True:
             try:
                 line = input().strip()
+                print(f"Received command: {line}")
                 
                 if not line:
                     continue
