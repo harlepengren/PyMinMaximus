@@ -383,7 +383,7 @@ class Board:
                     # check whether the last move was a pawn moving two squares
                     last_move = self.move_stack[-1]
                     last_piece = self.board[last_move.to_row][last_move.to_col]
-                    if (last_piece & 7) == PAWN and abs(last_move.to_row - last_move.from_row) == 2:
+                    if (last_piece & 7) == PAWN and abs(last_move.to_row - last_move.from_row) == 2 and (to_col == last_move.to_col):
                         is_passant = True
 
             return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
