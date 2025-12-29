@@ -383,8 +383,8 @@ class Board:
 
             return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
 
-        except:
-            print("Invalid format. Use: e2e4")
+        except Exception as e:
+            print(f"Invalid Move Conversion: {e}")
             return
 
     def push_uci(self, move_uci:str):
