@@ -11,7 +11,7 @@ class RandomEngine:
     def __init__(self):
         self.board = Board()
         self.name = "RandomMover"
-        self.author = "Kirk"
+        self.author = "Harlepengren"
     
     def uci(self):
         print(f"id name {self.name}")
