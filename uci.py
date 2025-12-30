@@ -175,8 +175,8 @@ class UCIHandler:
         move_number = self.board.fullmove_number
         
         # Search for best move
-        search_thread = threading.Thread(target=self._search_with_info, args=(depth, move_number))
-        search_thread.start()
+        self.search_thread = threading.Thread(target=self._search_with_info, args=(depth, move_number))
+        self.search_thread.start()
 
         self.timer_thread = threading.Timer(movetime, lambda: self.engine.set_stop(True)) if movetime else None
         self.timer_thread.start() if self.timer_thread else None
@@ -203,6 +203,8 @@ class UCIHandler:
         self.engine.nodes_searched = 0
         self.best_move, self.best_score = self.engine.find_best_move_alphabeta(max_depth)
         self.timer_thread.cancel() if self.timer_thread else None
+
+        self.search_thread.join()
         
         # Report best move
         if self.best_move:
