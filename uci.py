@@ -7,6 +7,7 @@ from opening_book import OpeningBook
 from move import Move
 from constants import *
 import os
+import threading
 
 class UCIHandler:
     """
@@ -174,21 +175,9 @@ class UCIHandler:
         move_number = self.board.fullmove_number
         
         # Search for best move
-        best_move, score = self._search_with_info(depth, movetime, move_number)
-        
-        # Report best move
-        if best_move:
-            print(f"bestmove {best_move}")
-        else:
-            # No legal moves - shouldn't happen, but be safe
-            legal_moves = self.board.generate_legal_moves()
-            if legal_moves:
-                print(f"bestmove {legal_moves[0]}")
-            else:
-                print("bestmove 0000")
-        
-        sys.stdout.flush()
-    
+        search_thread = threading.Thread(target=self._search_with_info, args=(depth, movetime, move_number))
+        search_thread.start()
+
     def _search_with_info(self, max_depth, time_limit, move_number):
         """
         Search with UCI info output.
@@ -233,7 +222,18 @@ class UCIHandler:
             if abs(score) > 19000:
                 break
         
-        return best_move, best_score
+        # Report best move
+        if best_move:
+            print(f"bestmove {best_move} ({best_score})")
+        else:
+            # No legal moves - shouldn't happen, but be safe
+            legal_moves = self.board.generate_legal_moves()
+            if legal_moves:
+                print(f"bestmove {legal_moves[0]}")
+            else:
+                print("bestmove 0000")
+        
+        sys.stdout.flush()
     
     def setoption(self, args):
         """Handle 'setoption' command - configure engine options."""
