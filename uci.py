@@ -301,6 +301,17 @@ class UCIHandler:
                 print(f"# Error: {e}", file=sys.stderr)
                 sys.stderr.flush()
 
+def _set_board_from_moves(board, moves):
+    """Helper generator to set board position from a list of UCI moves. Helps
+    with testing."""
+    for move_str in moves:
+        move = board.convert_uci(move_str)
+        if move:
+            board.make_move(move)
+        print(f"# Applied move: {move_str}")
+        print(board)
+        yield board
+
 
 def main():
     """Entry point for UCI mode."""
