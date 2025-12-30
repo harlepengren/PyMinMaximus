@@ -167,6 +167,8 @@ class UCIHandler:
             
             # Ensure minimum time
             movetime = max(movetime, 0.1)
+        print(f"# Starting search: depth={depth}, movetime={movetime}s")
+        sys.stdout.flush()
         
         # Calculate move number for opening book
         move_number = self.board.fullmove_number
