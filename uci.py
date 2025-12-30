@@ -190,15 +190,15 @@ class UCIHandler:
         self.engine.set_stop(False)
         
         # Check opening book first
-        if self.opening_book and self.opening_book.book_enabled:
-            book_move_uci = self.opening_book.get_book_move(
-                self.board, move_number, selection_mode="weighted"
-            )
-            
-            if book_move_uci:
-                book_move = self.board.convert_uci(book_move_uci)
-                if book_move:
-                    return book_move, 0
+        #if self.opening_book and self.opening_book.book_enabled:
+        #    book_move_uci = self.opening_book.get_book_move(
+        #        self.board, move_number, selection_mode="weighted"
+        #    )
+        #    
+        #    if book_move_uci:
+        #        book_move = self.board.convert_uci(book_move_uci)
+        #        if book_move:
+        #            return book_move, 0
         
         self.engine.nodes_searched = 0
         self.best_move, self.best_score = self.engine.find_best_move_alphabeta(max_depth)
