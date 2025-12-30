@@ -424,6 +424,9 @@ class SearchEngine:
             return None, 0
         
         for move in moves:
+            if self.stop:
+                break
+            
             undo_info = self.board.make_move(move)
             eval_score = self.alphabeta(depth - 1, alpha, beta, False)
             self.board.unmake_move(move, undo_info)

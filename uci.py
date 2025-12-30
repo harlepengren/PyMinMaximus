@@ -175,14 +175,16 @@ class UCIHandler:
         move_number = self.board.fullmove_number
         
         # Search for best move
-        search_thread = threading.Thread(target=self._search_with_info, args=(depth, movetime, move_number))
+        search_thread = threading.Thread(target=self._search_with_info, args=(depth, move_number))
         search_thread.start()
 
-    def _search_with_info(self, max_depth, time_limit, move_number):
+        self.timer_thread = threading.Timer(movetime, lambda: self.engine.set_stop(True)) if movetime else None
+        self.timer_thread.start() if self.timer_thread else None
+
+    def _search_with_info(self, max_depth, move_number):
         """
         Search with UCI info output.
         """
-        start_time = time.perf_counter()
         self.best_move = None
         self.best_score = 0
         self.engine.set_stop(False)
@@ -198,31 +200,9 @@ class UCIHandler:
                 if book_move:
                     return book_move, 0
         
-        # Iterative deepening with info output
-        for depth in range(1, max_depth + 1):
-            # Check time
-            if time_limit and (time.perf_counter() - start_time) > time_limit:
-                self.engine.set_stop(True)
-                break
-            
-            self.engine.nodes_searched = 0
-            move, score = self.engine.find_best_move_alphabeta(depth)
-            
-            elapsed = time.perf_counter() - start_time
-            nps = int(self.engine.nodes_searched / elapsed) if elapsed > 0 else 0
-            
-            # Send info to GUI
-            print(f"info depth {depth} score cp {score} nodes {self.engine.nodes_searched} "
-                  f"nps {nps} time {int(elapsed * 1000)}")
-            sys.stdout.flush()
-            
-            if move:
-                self.best_move = move
-                self.best_score = score
-            
-            # Stop if we found a mate
-            if abs(score) > 19000:
-                break
+        self.engine.nodes_searched = 0
+        self.best_move, self.best_score = self.engine.find_best_move_alphabeta(max_depth)
+        self.timer_thread.cancel() if self.timer_thread else None
         
         # Report best move
         if self.best_move:
