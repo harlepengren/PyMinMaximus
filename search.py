@@ -4,6 +4,9 @@ import time
 from krk_tablebase import KRKTablebase
 from opening_book import OpeningBook
 import os
+import threading
+
+lock = threading.Lock()
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -67,7 +70,7 @@ class TranspositionTable:
 class SearchEngine:
     def __init__(self, board, evaluator=None, book=None):
         self.board = board
-        self.stop = False
+        self.set_stop(False)
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
@@ -467,6 +470,7 @@ class SearchEngine:
         print(f"Total Time: {time.time() - start_time}")
         return best_move, best_score
     
-    def stop_search(self):
+    def set_stop(self, is_stopped=True):
         """Signal the search to stop"""
-        self.stop = True
+        with lock:
+            self.stop = is_stopped

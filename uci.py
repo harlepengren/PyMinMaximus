@@ -183,9 +183,9 @@ class UCIHandler:
         Search with UCI info output.
         """
         start_time = time.perf_counter()
-        best_move = None
-        best_score = 0
-        self.engine.stop = False
+        self.best_move = None
+        self.best_score = 0
+        self.engine.set_stop(False)
         
         # Check opening book first
         if self.opening_book and self.opening_book.book_enabled:
@@ -202,7 +202,7 @@ class UCIHandler:
         for depth in range(1, max_depth + 1):
             # Check time
             if time_limit and (time.perf_counter() - start_time) > time_limit:
-                self.engine.stop = True
+                self.engine.set_stop(True)
                 break
             
             self.engine.nodes_searched = 0
@@ -217,16 +217,16 @@ class UCIHandler:
             sys.stdout.flush()
             
             if move:
-                best_move = move
-                best_score = score
+                self.best_move = move
+                self.best_score = score
             
             # Stop if we found a mate
             if abs(score) > 19000:
                 break
         
         # Report best move
-        if best_move:
-            print(f"bestmove {best_move} ({best_score})")
+        if self.best_move:
+            print(f"bestmove {self.best_move}")
         else:
             # No legal moves - shouldn't happen, but be safe
             legal_moves = self.board.generate_legal_moves()
@@ -293,7 +293,7 @@ class UCIHandler:
                     break
                 
                 elif command == 'stop':
-                    self.engine.stop = True
+                    self.engine.set_stop(True)
                 
             except EOFError:
                 break
