@@ -67,6 +67,7 @@ class TranspositionTable:
 class SearchEngine:
     def __init__(self, board, evaluator=None, book=None):
         self.board = board
+        self.stop = False
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
@@ -302,16 +303,13 @@ class SearchEngine:
         
         return sorted(moves, key=move_score, reverse=True)
     
-    def alphabeta(self, depth, alpha, beta, maximizing_player, time_limit=None):
+    def alphabeta(self, depth, alpha, beta, maximizing_player):
         """
         Alpha-beta with transposition table.
         """
-        current_time = time.perf_counter() - self.start_time
-        if time_limit and current_time >= time_limit:
-            self.stop = True
-        
+        # Check for time cutoff
         if self.stop:
-            return 0  # Return neutral score on stop
+            return 0
 
         # Check tablebase FIRST (before any search)
         piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
@@ -388,15 +386,11 @@ class SearchEngine:
             
             return min_eval
     
-    def find_best_move_alphabeta(self, depth, time_limit=None):
+    def find_best_move_alphabeta(self, depth):
         """
         Find the best move using alpha-beta pruning.
         time_remaining: time left in milliseconds (optional)
         """
-        self.stop = False
-        self.start_time = time.perf_counter()
-        time_limit_second = time_limit / 1000 if time_limit else None
-
         # Check opening book
         if self.book.is_in_book(self.board):
             moves = self.board.generate_legal_moves()
@@ -428,7 +422,7 @@ class SearchEngine:
         
         for move in moves:
             undo_info = self.board.make_move(move)
-            eval_score = self.alphabeta(depth - 1, alpha, beta, False, time_limit_second)
+            eval_score = self.alphabeta(depth - 1, alpha, beta, False)
             self.board.unmake_move(move, undo_info)
             
             if eval_score > best_eval:

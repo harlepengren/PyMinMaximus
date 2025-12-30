@@ -185,6 +185,7 @@ class UCIHandler:
         start_time = time.perf_counter()
         best_move = None
         best_score = 0
+        self.engine.stop = False
         
         # Check opening book first
         if self.opening_book and self.opening_book.book_enabled:
@@ -201,10 +202,11 @@ class UCIHandler:
         for depth in range(1, max_depth + 1):
             # Check time
             if time_limit and (time.perf_counter() - start_time) > time_limit:
+                self.engine.stop = True
                 break
             
             self.engine.nodes_searched = 0
-            move, score = self.engine.find_best_move_alphabeta(depth, time_limit)
+            move, score = self.engine.find_best_move_alphabeta(depth)
             
             elapsed = time.perf_counter() - start_time
             nps = int(self.engine.nodes_searched / elapsed) if elapsed > 0 else 0
