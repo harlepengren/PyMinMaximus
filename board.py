@@ -389,7 +389,7 @@ class Board:
             return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
 
         except Exception as e:
-            print(f"Invalid Move Conversion: {e}")
+            print(f"{move_str} - Invalid Move Conversion: {e}")
             return
 
     def push_uci(self, move_uci:str):
