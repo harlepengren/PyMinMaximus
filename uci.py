@@ -204,7 +204,7 @@ class UCIHandler:
         self.best_move, self.best_score = self.engine.find_best_move_alphabeta(max_depth)
         self.timer_thread.cancel() if self.timer_thread else None
 
-        self.search_thread.join()
+        #self.search_thread.join()
         
         # Report best move
         if self.best_move:
