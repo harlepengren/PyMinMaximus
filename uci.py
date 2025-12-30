@@ -309,7 +309,6 @@ def _set_board_from_moves(board, moves):
         if move:
             board.make_move(move)
         print(f"# Applied move: {move_str}")
-        print(board)
         yield board
 
 
