@@ -169,7 +169,15 @@ class UCIHandler:
             # Ensure minimum time
             movetime = max(movetime, 0.1)
         
-        movetime = 5.0 + (self.board.fullmove_number)
+        if self.board.fullmove_number < 10:
+            movetime = 0.5
+        elif self.board.fullmove_number < 20:
+            movetime = 20.0
+        else:
+            if self.board.to_move == WHITE:
+                movetime = winc / 1000 / 20
+            else:
+                movetime = binc / 1000 / 20
         print(f"# Starting search: depth={depth}, movetime={movetime}s")
         sys.stdout.flush()
         
