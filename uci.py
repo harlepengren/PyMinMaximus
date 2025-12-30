@@ -276,6 +276,11 @@ class UCIHandler:
                 
                 elif command == 'stop':
                     self.engine.set_stop(True)
+
+                elif command == 'status':
+                    print(f"Currently searching: {self.search_thread.is_alive() if self.search_thread else False}")
+                    print(f"Timer active: {self.timer_thread.is_alive() if self.timer_thread else False}")
+                    sys.stdout.flush()
                 
             except EOFError:
                 break
