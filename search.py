@@ -466,3 +466,7 @@ class SearchEngine:
                 break
         print(f"Total Time: {time.time() - start_time}")
         return best_move, best_score
+    
+    def stop_search(self):
+        """Signal the search to stop"""
+        self.stop = True
