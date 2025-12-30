@@ -306,6 +306,13 @@ class SearchEngine:
         """
         Alpha-beta with transposition table.
         """
+        current_time = time.perf_counter() - self.start_time
+        if time_limit and current_time >= time_limit:
+            self.stop = True
+        
+        if self.stop:
+            return 0  # Return neutral score on stop
+
         # Check tablebase FIRST (before any search)
         piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
         if piece_count <= 5:
@@ -328,11 +335,7 @@ class SearchEngine:
         
         moves = self.board.generate_legal_moves()
 
-        current_time = time.perf_counter() - self.start_time
-        if time_limit and current_time >= time_limit:
-            self.stop = True
-
-        if depth == 0 or len(moves) == 0 or self.stop:
+        if depth == 0 or len(moves) == 0:
             score = self.evaluator.evaluate(self.board)
             return score
         
