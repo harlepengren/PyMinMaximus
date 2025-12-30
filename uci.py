@@ -291,8 +291,7 @@ class UCIHandler:
                     break
                 
                 elif command == 'stop':
-                    # In our simple implementation, search completes before stop
-                    pass
+                    self.engine.stop = True
                 
             except EOFError:
                 break
