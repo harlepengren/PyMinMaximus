@@ -31,20 +31,29 @@ class TranspositionTable:
         return h
     
     def store(self, board, depth, score, flag):
-        """
-        Store a position evaluation.
-        flag: 'exact', 'lowerbound', or 'upperbound'
-        """
-        if len(self.table) >= self.size:
-            # Simple replacement: clear oldest entries
-            self.table.clear()
-        
         hash_key = self.get_hash(board)
+        
+        # Always replace if:
+        # 1. Slot is empty, or
+        # 2. New search is deeper, or  
+        # 3. Same depth (refresh)
+        if hash_key in self.table:
+            old_entry = self.table[hash_key]
+            if depth < old_entry['depth']:
+                return  # Don't replace deeper search
+        
         self.table[hash_key] = {
             'depth': depth,
             'score': score,
             'flag': flag
         }
+        
+        # Simple size limit - remove 10% when full
+        if len(self.table) > self.size:
+            items = list(self.table.items())
+            items.sort(key=lambda x: x[1]['depth'])
+            # Keep the deepest searches
+            self.table = dict(items[len(items)//10:])
     
     def probe(self, board, depth, alpha, beta):
         """
