@@ -328,10 +328,10 @@ class SearchEngine:
         """
         Alpha-beta with transposition table.
         """
-        # Check for time cutoff
+        # Check if we should stop (for UCI)
         if self.stop:
             return 0
-
+        
         # Check tablebase FIRST (before any search)
         piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
         if piece_count <= 5:
@@ -342,7 +342,7 @@ class SearchEngine:
                 if not maximizing_player:
                     score = -score
                 return score
-
+        
         alpha_orig = alpha
         
         # Check transposition table
@@ -352,17 +352,33 @@ class SearchEngine:
         
         self.nodes_searched += 1
         
-        moves = self.board.generate_legal_moves()
-
-        if depth == 0 or len(moves) == 0:
-            score = self.evaluator.evaluate(self.board)
+        if depth == 0:
+            score = self.evaluator.evaluate_relative(self.board)
             return score
         
-        moves = self.order_moves(moves)
+        # Generate and order pseudo-legal moves (no legality check yet!)
+        pseudo_moves = self.board.generate_pseudo_legal_moves()
+        
+        if len(pseudo_moves) == 0:
+            # No moves at all - checkmate or stalemate
+            if self.board.is_in_check(self.board.to_move):
+                return -20000 + (10 - depth)
+            else:
+                return 0
+        
+        # Order moves BEFORE filtering for legality
+        ordered_moves = self.order_moves(pseudo_moves)
         
         if maximizing_player:
             max_eval = float('-inf')
-            for move in moves:
+            legal_move_found = False
+            
+            for move in ordered_moves:
+                # Check legality only when we're about to search it
+                if not self.board.is_legal_move(move):
+                    continue
+                
+                legal_move_found = True
                 undo_info = self.board.make_move(move)
                 eval_score = self.alphabeta(depth - 1, alpha, beta, False)
                 self.board.unmake_move(move, undo_info)
@@ -372,6 +388,13 @@ class SearchEngine:
                 
                 if beta <= alpha:
                     break
+            
+            # If no legal moves found, it's checkmate or stalemate
+            if not legal_move_found:
+                if self.board.is_in_check(self.board.to_move):
+                    return -20000 + (10 - depth)
+                else:
+                    return 0
             
             # Store in transposition table
             if max_eval <= alpha_orig:
@@ -385,7 +408,14 @@ class SearchEngine:
             return max_eval
         else:
             min_eval = float('inf')
-            for move in moves:
+            legal_move_found = False
+            
+            for move in ordered_moves:
+                # Check legality only when we're about to search it
+                if not self.board.is_legal_move(move):
+                    continue
+                
+                legal_move_found = True
                 undo_info = self.board.make_move(move)
                 eval_score = self.alphabeta(depth - 1, alpha, beta, True)
                 self.board.unmake_move(move, undo_info)
@@ -395,6 +425,13 @@ class SearchEngine:
                 
                 if beta <= alpha:
                     break
+            
+            # If no legal moves found, it's checkmate or stalemate
+            if not legal_move_found:
+                if self.board.is_in_check(self.board.to_move):
+                    return -20000 + (10 - depth)
+                else:
+                    return 0
             
             # Store in transposition table
             if min_eval <= alpha_orig:
