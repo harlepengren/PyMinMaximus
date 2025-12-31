@@ -28,7 +28,7 @@ class TranspositionTable:
         if board.en_passant_square:
             h ^= board.en_passant_square[0] * 8 + board.en_passant_square[1]
     
-    return h
+        return h
     
     def store(self, board, depth, score, flag):
         """
