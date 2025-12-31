@@ -3,6 +3,10 @@ from constants import *
 import time
 from krk_tablebase import KRKTablebase
 from opening_book import OpeningBook
+import os
+import threading
+
+lock = threading.Lock()
 
 class TranspositionTable:
     def __init__(self, size_mb=64):
@@ -64,14 +68,15 @@ class TranspositionTable:
         return False, 0
 
 class SearchEngine:
-    def __init__(self, board, evaluator=None):
+    def __init__(self, board, evaluator=None, book=None):
         self.board = board
+        self.set_stop(False)
         self.evaluator = evaluator if evaluator else Evaluator()
         self.nodes_searched = 0
         self.tt = TranspositionTable()
 
         # Opening book
-        self.book = OpeningBook('books/kasparov.bin')
+        self.book = book if book else OpeningBook('books/kasparov.bin')
 
         # Add tablebase
         self.krk_tablebase = None
@@ -81,14 +86,15 @@ class SearchEngine:
         """Load endgame tablebases"""
         try:
             self.krk_tablebase = KRKTablebase()
-            self.krk_tablebase.load("tablebase/krk_tablebase.pkl")
+            table_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tablebase/krk_tablebase.pkl')
+            self.krk_tablebase.load(table_path)
             print("KRK tablebase loaded successfully")
         except:
             # Generate if not found
             print("Generating KRK tablebase...")
             self.krk_tablebase = KRKTablebase()
             self.krk_tablebase.generate()
-            self.krk_tablebase.save("tablebase/krk_tablebase.pkl")
+            self.krk_tablebase.save(table_path)
 
     def is_tablebase_position(self, board):
         """Check if position is in a tablebase"""
@@ -304,6 +310,10 @@ class SearchEngine:
         """
         Alpha-beta with transposition table.
         """
+        # Check for time cutoff
+        if self.stop:
+            return 0
+
         # Check tablebase FIRST (before any search)
         piece_count = sum(1 for row in self.board.board for p in row if p != EMPTY)
         if piece_count <= 5:
@@ -382,6 +392,7 @@ class SearchEngine:
     def find_best_move_alphabeta(self, depth):
         """
         Find the best move using alpha-beta pruning.
+        time_remaining: time left in milliseconds (optional)
         """
         # Check opening book
         if self.book.is_in_book(self.board):
@@ -413,6 +424,9 @@ class SearchEngine:
             return None, 0
         
         for move in moves:
+            if self.stop:
+                break
+            
             undo_info = self.board.make_move(move)
             eval_score = self.alphabeta(depth - 1, alpha, beta, False)
             self.board.unmake_move(move, undo_info)
@@ -458,3 +472,8 @@ class SearchEngine:
                 break
         print(f"Total Time: {time.time() - start_time}")
         return best_move, best_score
+    
+    def set_stop(self, is_stopped=True):
+        """Signal the search to stop"""
+        with lock:
+            self.stop = is_stopped

@@ -370,21 +370,26 @@ class Board:
                 promotion = promo_map.get(move_str[4])
 
             # Check for castle
+            is_castling = False
+            is_passant = False
             if piece_type == KING:
                 if (abs(from_col - to_col) > 1) or (abs(from_row - to_row)) > 1:
                     is_castling = True
-            else:
-                is_castling = False
 
+            # Check for en passant
             if piece_type == PAWN and (from_col != to_col):
-                is_passant = True
-            else:
-                is_passant = False
+                # Check whether target square is empty
+                if self.board[to_row][to_col] == EMPTY:
+                    # check whether the last move was a pawn moving two squares
+                    last_move = self.move_stack[-1]
+                    last_piece = self.board[last_move.to_row][last_move.to_col]
+                    if (last_piece & 7) == PAWN and abs(last_move.to_row - last_move.from_row) == 2 and (to_col == last_move.to_col):
+                        is_passant = True
 
             return Move(from_row,from_col,to_row,to_col,promotion,is_castling,is_passant)
 
-        except:
-            print("Invalid format. Use: e2e4")
+        except Exception as e:
+            print(f"{move_str} - Invalid Move Conversion: {e}")
             return
 
     def push_uci(self, move_uci:str):
