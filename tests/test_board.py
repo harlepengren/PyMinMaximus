@@ -180,6 +180,19 @@ class TestBoard(unittest.TestCase):
         board.pop()  # Undo white king move
         self.assertEqual((1, 4), board.find_king(WHITE))
 
+    def test_is_square_attacked(self):
+        """Test the is_square_attacked function for accuracy."""
+        print("="*60)
+        print("Test 9: Square Attack Detection")
+        board = Board()
+        board.from_fen("8/1k6/8/3r4/8/8/4K3/8 w - - 0 1")
+        print("Test whether f4 is attacked by Black rook on d5:")
+        square = (3, 4)  # d5
+        self.assertFalse(board.is_square_attacked(square[0], square[1], BLACK))
+
+        print("Test whether e5 is attacked by Black rook on d5:")
+        square = (4, 4)  # e4
+        self.assertTrue(board.is_square_attacked(square[0], square[1], BLACK))
 
 if __name__ == '__main__':
     unittest.main()

@@ -422,7 +422,7 @@ class Board:
 
     def is_square_attacked(self, row, col, by_color):
         """Check if a square is attacked by pieces of a given color."""
-        # Check for pawn attacks
+        # Pawn attacks (most common, check first)
         if by_color == WHITE:
             pawn_direction = 1
         else:
@@ -436,7 +436,7 @@ class Board:
                 if piece == (by_color | PAWN):
                     return True
         
-        # Check for knight attacks
+        # Knight attacks
         knight_offsets = [
             (-2, -1), (-2, 1), (-1, -2), (-1, 2),
             (1, -2), (1, 2), (2, -1), (2, 1)
@@ -448,8 +448,19 @@ class Board:
                 if piece == (by_color | KNIGHT):
                     return True
         
-        # Check for sliding piece attacks
-        # Diagonal (bishop and queen)
+        # King attacks (check before sliding pieces for castling checks)
+        for drow in [-1, 0, 1]:
+            for dcol in [-1, 0, 1]:
+                if drow == 0 and dcol == 0:
+                    continue
+                new_row, new_col = row + drow, col + dcol
+                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                    piece = self.board[new_row][new_col]
+                    if piece == (by_color | KING):
+                        return True
+        
+        # Sliding pieces (bishops, rooks, queens)
+        # Diagonal attacks
         for drow, dcol in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
             new_row, new_col = row + drow, col + dcol
             while 0 <= new_row < 8 and 0 <= new_col < 8:
@@ -463,7 +474,7 @@ class Board:
                 new_row += drow
                 new_col += dcol
         
-        # Straight (rook and queen)
+        # Straight attacks
         for drow, dcol in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             new_row, new_col = row + drow, col + dcol
             while 0 <= new_row < 8 and 0 <= new_col < 8:
@@ -476,17 +487,6 @@ class Board:
                     break
                 new_row += drow
                 new_col += dcol
-        
-        # Check for king attacks
-        for drow in [-1, 0, 1]:
-            for dcol in [-1, 0, 1]:
-                if drow == 0 and dcol == 0:
-                    continue
-                new_row, new_col = row + drow, col + dcol
-                if 0 <= new_row < 8 and 0 <= new_col < 8:
-                    piece = self.board[new_row][new_col]
-                    if piece == (by_color | KING):
-                        return True
         
         return False
     
