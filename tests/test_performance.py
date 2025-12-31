@@ -53,3 +53,19 @@ class PerformanceTest(unittest.TestCase):
         end = time.perf_counter()
         print(f"Generated moves {iterations} times in {end-start} seconds")
         print(f"Average time per generation: {(end-start)/iterations} seconds")
+
+    def test_board_evaluation_speed(self):
+        """Tests the speed of board evaluation."""
+        fen = "rnbqkbnr/pp2ppp1/2p4p/6B1/3Pp3/2N5/PPP2PPP/R2QKBNR w KQkq - 0 5"
+        board = Board()
+        board.from_fen(fen)
+
+        print("="*60)
+        print("Testing Board Evaluation Speed")
+        iterations = 100000
+        start = time.perf_counter()
+        for _ in range(iterations):
+            score = board.evaluate()
+        end = time.perf_counter()
+        print(f"Evaluated board {iterations} times in {end-start} seconds")
+        print(f"Average time per evaluation: {(end-start)/iterations} seconds")
