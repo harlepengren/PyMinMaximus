@@ -15,27 +15,45 @@ class TranspositionTable:
         self.table = {}
     
     def get_hash(self, board):
-        """
-        Simple hash of the board position.
-        In a real engine, we'd use Zobrist hashing.
-        """
-        return board.to_fen()
+        """Fast numeric hash of board position."""
+        h = 0
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                h = (h * 31 + piece) & 0xFFFFFFFFFFFFFFFF  # Keep as 64-bit
+        
+        # Include game state
+        h ^= board.to_move
+        h ^= hash(tuple(board.castling_rights.items()))
+        if board.en_passant_square:
+            h ^= board.en_passant_square[0] * 8 + board.en_passant_square[1]
+    
+        return h
     
     def store(self, board, depth, score, flag):
-        """
-        Store a position evaluation.
-        flag: 'exact', 'lowerbound', or 'upperbound'
-        """
-        if len(self.table) >= self.size:
-            # Simple replacement: clear oldest entries
-            self.table.clear()
-        
         hash_key = self.get_hash(board)
+        
+        # Always replace if:
+        # 1. Slot is empty, or
+        # 2. New search is deeper, or  
+        # 3. Same depth (refresh)
+        if hash_key in self.table:
+            old_entry = self.table[hash_key]
+            if depth < old_entry['depth']:
+                return  # Don't replace deeper search
+        
         self.table[hash_key] = {
             'depth': depth,
             'score': score,
             'flag': flag
         }
+        
+        # Simple size limit - remove 10% when full
+        if len(self.table) > self.size:
+            items = list(self.table.items())
+            items.sort(key=lambda x: x[1]['depth'])
+            # Keep the deepest searches
+            self.table = dict(items[len(items)//10:])
     
     def probe(self, board, depth, alpha, beta):
         """

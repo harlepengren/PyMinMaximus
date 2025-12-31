@@ -35,6 +35,9 @@ class Board:
         for i in range(8):
             self.board[1][i] = WHITE | PAWN
             self.board[0][i] = WHITE | back_rank[i]
+
+        self.white_king_pos = (0, 4)
+        self.black_king_pos = (7, 4)
     
     def piece_at(self, row, col):
         """Get the piece at a given square."""
@@ -274,9 +277,11 @@ class Board:
         # Update castling rights
         if piece_type == KING:
             if self.to_move == WHITE:
+                self.white_king_pos = (move.to_row, move.to_col)
                 self.castling_rights['K'] = False
                 self.castling_rights['Q'] = False
             else:
+                self.black_king_pos = (move.to_row, move.to_col)
                 self.castling_rights['k'] = False
                 self.castling_rights['q'] = False
         
@@ -326,6 +331,12 @@ class Board:
         # Move piece back
         self.board[move.from_row][move.from_col] = piece
         self.board[move.to_row][move.to_col] = undo_info['captured_piece']
+
+        if piece & 7 == KING:
+            if self.to_move == WHITE:
+                self.white_king_pos = (move.from_row, move.from_col)
+            else:
+                self.black_king_pos = (move.from_row, move.from_col)
         
         # Handle en passant
         if move.is_en_passant:
@@ -411,7 +422,7 @@ class Board:
 
     def is_square_attacked(self, row, col, by_color):
         """Check if a square is attacked by pieces of a given color."""
-        # Check for pawn attacks
+        # Pawn attacks (most common, check first)
         if by_color == WHITE:
             pawn_direction = 1
         else:
@@ -425,7 +436,7 @@ class Board:
                 if piece == (by_color | PAWN):
                     return True
         
-        # Check for knight attacks
+        # Knight attacks
         knight_offsets = [
             (-2, -1), (-2, 1), (-1, -2), (-1, 2),
             (1, -2), (1, 2), (2, -1), (2, 1)
@@ -437,8 +448,19 @@ class Board:
                 if piece == (by_color | KNIGHT):
                     return True
         
-        # Check for sliding piece attacks
-        # Diagonal (bishop and queen)
+        # King attacks (check before sliding pieces for castling checks)
+        for drow in [-1, 0, 1]:
+            for dcol in [-1, 0, 1]:
+                if drow == 0 and dcol == 0:
+                    continue
+                new_row, new_col = row + drow, col + dcol
+                if 0 <= new_row < 8 and 0 <= new_col < 8:
+                    piece = self.board[new_row][new_col]
+                    if piece == (by_color | KING):
+                        return True
+        
+        # Sliding pieces (bishops, rooks, queens)
+        # Diagonal attacks
         for drow, dcol in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
             new_row, new_col = row + drow, col + dcol
             while 0 <= new_row < 8 and 0 <= new_col < 8:
@@ -452,7 +474,7 @@ class Board:
                 new_row += drow
                 new_col += dcol
         
-        # Straight (rook and queen)
+        # Straight attacks
         for drow, dcol in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
             new_row, new_col = row + drow, col + dcol
             while 0 <= new_row < 8 and 0 <= new_col < 8:
@@ -466,26 +488,15 @@ class Board:
                 new_row += drow
                 new_col += dcol
         
-        # Check for king attacks
-        for drow in [-1, 0, 1]:
-            for dcol in [-1, 0, 1]:
-                if drow == 0 and dcol == 0:
-                    continue
-                new_row, new_col = row + drow, col + dcol
-                if 0 <= new_row < 8 and 0 <= new_col < 8:
-                    piece = self.board[new_row][new_col]
-                    if piece == (by_color | KING):
-                        return True
-        
         return False
     
     def find_king(self, color):
         """Find the king's position for a given color."""
-        for row in range(8):
-            for col in range(8):
-                piece = self.board[row][col]
-                if piece == (color | KING):
-                    return (row, col)
+        if color == WHITE:
+            return self.white_king_pos
+        elif color == BLACK:
+            return self.black_king_pos
+        
         return None
     
     def is_in_check(self, color):
@@ -556,6 +567,11 @@ class Board:
                     }
                     self.board[7 - row_idx][col_idx] = piece_map[char]
                     col_idx += 1
+
+                    if self.board[7 - row_idx][col_idx - 1] == (WHITE | KING):
+                        self.white_king_pos = (7 - row_idx, col_idx - 1)
+                    elif self.board[7 - row_idx][col_idx - 1] == (BLACK | KING):
+                        self.black_king_pos = (7 - row_idx, col_idx - 1)
         
         # Parse side to move
         self.to_move = WHITE if parts[1] == 'w' else BLACK
