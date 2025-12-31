@@ -65,7 +65,7 @@ class PerformanceTest(unittest.TestCase):
         iterations = 100000
         start = time.perf_counter()
         for _ in range(iterations):
-            score = board.evaluate()
+            score = board.evaluate_board()
         end = time.perf_counter()
         print(f"Evaluated board {iterations} times in {end-start} seconds")
         print(f"Average time per evaluation: {(end-start)/iterations} seconds")
