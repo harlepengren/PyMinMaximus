@@ -147,6 +147,38 @@ class TestBoard(unittest.TestCase):
         board.pop()
         test_board.pop()
 
+    def test_king_position(self):
+        """We updated board to track king positions directly for efficiency.
+           This test ensures the tracking works correctly."""
+        print("="*60)
+        print("Test 8: King Position Tracking")
+        board = Board()
+        board.from_fen("8/2k5/8/8/8/8/4K3/8 w - - 0 1")
+        print("Check initial king positions:")
+        white_king_pos = (1, 4)
+        self.assertEqual(white_king_pos, board.find_king(WHITE))
+        
+        black_king_pos = (6, 2)
+        self.assertEqual(black_king_pos, board.find_king(BLACK))
+
+        print("Check king positions after moves:")
+        # Move white king
+        move = board.convert_uci("e2e1")
+        board.make_move(move)
+        print(f"After e2e1, White King Position: {board.white_king_pos}")
+        self.assertEqual((0, 4), board.find_king(WHITE))
+
+        # Move black king
+        move = board.convert_uci("c7d6")
+        board.make_move(move)
+        print(f"After c7d6, Black King Position: {board.black_king_pos}")
+        self.assertEqual((5, 3), board.find_king(BLACK))
+
+        print("Check after unmake move:")
+        board.pop()  # Undo black king move
+        self.assertEqual((6, 2), board.find_king(BLACK))
+        board.pop()  # Undo white king move
+        self.assertEqual((1, 4), board.find_king(WHITE))
 
 
 if __name__ == '__main__':

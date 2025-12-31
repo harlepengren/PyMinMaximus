@@ -35,6 +35,9 @@ class Board:
         for i in range(8):
             self.board[1][i] = WHITE | PAWN
             self.board[0][i] = WHITE | back_rank[i]
+
+        self.white_king_pos = (0, 4)
+        self.black_king_pos = (7, 4)
     
     def piece_at(self, row, col):
         """Get the piece at a given square."""
@@ -274,9 +277,11 @@ class Board:
         # Update castling rights
         if piece_type == KING:
             if self.to_move == WHITE:
+                self.white_king_pos = (move.to_row, move.to_col)
                 self.castling_rights['K'] = False
                 self.castling_rights['Q'] = False
             else:
+                self.black_king_pos = (move.to_row, move.to_col)
                 self.castling_rights['k'] = False
                 self.castling_rights['q'] = False
         
@@ -326,6 +331,12 @@ class Board:
         # Move piece back
         self.board[move.from_row][move.from_col] = piece
         self.board[move.to_row][move.to_col] = undo_info['captured_piece']
+
+        if piece & 7 == KING:
+            if self.to_move == WHITE:
+                self.white_king_pos = (move.from_row, move.from_col)
+            else:
+                self.black_king_pos = (move.from_row, move.from_col)
         
         # Handle en passant
         if move.is_en_passant:
@@ -481,11 +492,11 @@ class Board:
     
     def find_king(self, color):
         """Find the king's position for a given color."""
-        for row in range(8):
-            for col in range(8):
-                piece = self.board[row][col]
-                if piece == (color | KING):
-                    return (row, col)
+        if color == WHITE:
+            return self.white_king_pos
+        elif color == BLACK:
+            return self.black_king_pos
+        
         return None
     
     def is_in_check(self, color):
@@ -556,6 +567,11 @@ class Board:
                     }
                     self.board[7 - row_idx][col_idx] = piece_map[char]
                     col_idx += 1
+
+                    if self.board[7 - row_idx][col_idx - 1] == (WHITE | KING):
+                        self.white_king_pos = (7 - row_idx, col_idx - 1)
+                    elif self.board[7 - row_idx][col_idx - 1] == (BLACK | KING):
+                        self.black_king_pos = (7 - row_idx, col_idx - 1)
         
         # Parse side to move
         self.to_move = WHITE if parts[1] == 'w' else BLACK
