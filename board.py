@@ -492,12 +492,7 @@ class Board:
     
     def find_king(self, color):
         """Find the king's position for a given color."""
-        if color == WHITE:
-            return self.white_king_pos
-        elif color == BLACK:
-            return self.black_king_pos
-        
-        return None
+        return self.white_king_pos if color == WHITE else self.black_king_pos
     
     def is_in_check(self, color):
         """Check if the given color's king is in check."""
