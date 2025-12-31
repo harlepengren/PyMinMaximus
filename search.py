@@ -15,11 +15,20 @@ class TranspositionTable:
         self.table = {}
     
     def get_hash(self, board):
-        """
-        Simple hash of the board position.
-        In a real engine, we'd use Zobrist hashing.
-        """
-        return board.to_fen()
+        """Fast numeric hash of board position."""
+        h = 0
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+                h = (h * 31 + piece) & 0xFFFFFFFFFFFFFFFF  # Keep as 64-bit
+        
+        # Include game state
+        h ^= board.to_move
+        h ^= hash(tuple(board.castling_rights.items()))
+        if board.en_passant_square:
+            h ^= board.en_passant_square[0] * 8 + board.en_passant_square[1]
+    
+    return h
     
     def store(self, board, depth, score, flag):
         """
