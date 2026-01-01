@@ -1,6 +1,7 @@
 
 from move import Move
 from constants import *
+import pst
 
 class Board:
     def __init__(self):
@@ -38,6 +39,9 @@ class Board:
 
         self.white_king_pos = (0, 4)
         self.black_king_pos = (7, 4)
+
+        self.pst = 0
+        self.value = 0
     
     def piece_at(self, row, col):
         """Get the piece at a given square."""
@@ -308,6 +312,21 @@ class Board:
             self.fullmove_number += 1
         
         self.to_move = BLACK if self.to_move == WHITE else WHITE
+
+        # Update material and pst values
+        position_score = pst.get_piece_square_value(piece_type, move.to_row, move.to_col, piece & 24 == WHITE,False)
+        position_score -= pst.get_piece_square_value(piece_type, move.from_row, move.from_col, piece & 24 == WHITE,False)
+        self.pst += position_score
+        undo_info['pst_change'] = position_score
+
+        if undo_info['captured_piece'] != EMPTY:
+            captured_type = undo_info['captured_piece'] & 7
+            piece_value = pst.get_piece_value(captured_type)
+            if undo_info['captured_piece'] & 24 == WHITE:
+                self.value -= piece_value
+            else:
+                self.value += piece_value
+            undo_info['piece_value'] = piece_value
         
         return undo_info
     
@@ -357,6 +376,9 @@ class Board:
         self.castling_rights = undo_info['castling_rights']
         self.en_passant_square = undo_info['en_passant_square']
         self.halfmove_clock = undo_info['halfmove_clock']
+
+        self.pst -= undo_info.get('pst_change',0)
+        self.value += undo_info.get('piece_value',0)
 
     def convert_uci(self, move_str:str)->Move:
         """Converts a move from UCI to Move. No guarantees that the move
@@ -541,6 +563,8 @@ class Board:
     def from_fen(self, fen):
         """Load a position from FEN notation."""
         parts = fen.split()
+        self.value = 0
+        self.pst = 0
         
         # Parse board position
         rows = parts[0].split('/')
@@ -567,6 +591,9 @@ class Board:
                         self.white_king_pos = (7 - row_idx, col_idx - 1)
                     elif self.board[7 - row_idx][col_idx - 1] == (BLACK | KING):
                         self.black_king_pos = (7 - row_idx, col_idx - 1)
+
+                    self.pst += pst.get_piece_square_value(piece_map[char] & 7, 7 - row_idx, col_idx - 1,piece_map[char] & 24 == WHITE,False)
+                    self.value += pst.get_piece_value(piece_map[char] & 7)
         
         # Parse side to move
         self.to_move = WHITE if parts[1] == 'w' else BLACK
