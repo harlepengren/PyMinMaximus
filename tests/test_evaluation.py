@@ -105,8 +105,8 @@ class TestEvaluation(unittest.TestCase):
         score_h4 = evaluator.evaluate(board2)
         
         print(f"Starting position: {score_start:+d}")
-        print(f"After 1.e4: {score_e4:+d} (improvement: {score_e4 - score_start:+d})")
-        print(f"After 1.h4: {score_h4:+d} (improvement: {score_h4 - score_start:+d})")
+        print(f"After 1.e4: {score_e4:+d} (improvement: {score_e4 - score_start:+d})  PST: {board1.pst:+d}")
+        print(f"After 1.h4: {score_h4:+d} (improvement: {score_h4 - score_start:+d}) PST: {board2.pst:+d}")
         print(f"e4 is better by: {score_e4 - score_h4:+d} centipawns")
         
         # Test knight development
