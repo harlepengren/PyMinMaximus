@@ -5,6 +5,7 @@ from krk_tablebase import KRKTablebase
 from opening_book import OpeningBook
 import os
 import threading
+import pst
 
 lock = threading.Lock()
 
@@ -318,9 +319,9 @@ class SearchEngine:
             
             if captured != EMPTY:
                 # MVV-LVA: Most Valuable Victim - Least Valuable Attacker
-                captured_value = self.evaluator.piece_values[captured & 7]
+                captured_value = pst.get_piece_value(captured & 7)
                 attacker = self.board.board[move.from_row][move.from_col]
-                attacker_value = self.evaluator.piece_values[attacker & 7]
+                attacker_value = pst.get_piece_value(attacker & 7)
                 
                 # Prioritize capturing valuable pieces with cheap pieces
                 score += captured_value * 10 - attacker_value
