@@ -108,6 +108,7 @@ class TestEvaluation(unittest.TestCase):
         print(f"After 1.e4: {score_e4:+d} (improvement: {score_e4 - score_start:+d})  PST: {board1.pst:+d}")
         print(f"After 1.h4: {score_h4:+d} (improvement: {score_h4 - score_start:+d}) PST: {board2.pst:+d}")
         print(f"e4 is better by: {score_e4 - score_h4:+d} centipawns")
+        self.assertGreater(score_e4, score_h4)
         
         # Test knight development
         print("\n2. Knight Development: Nf3 vs. Na3")
@@ -132,6 +133,7 @@ class TestEvaluation(unittest.TestCase):
         print(f"After 1.e4 Nf3: {score_nf3:+d}")
         print(f"After 1.e4 Na3: {score_na3:+d}")
         print(f"Nf3 is better by: {score_nf3 - score_na3:+d} centipawns")
+        self.assertGreater(score_nf3, score_na3)
 
 
 if __name__ == "__main__":
