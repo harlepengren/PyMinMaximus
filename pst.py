@@ -107,7 +107,7 @@ def get_piece_square_value(piece_type, row, col, is_white, is_endgame):
     Black's tables are flipped vertically from White's.
     """
     # Flip row for black pieces
-    table_row = row if is_white else 7 - row
+    table_row = row if not is_white else 7 - row
     
     if piece_type == PAWN:
         return pawn_table[table_row][col]
