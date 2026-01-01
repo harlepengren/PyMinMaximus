@@ -323,9 +323,8 @@ class Board:
             captured_type = undo_info['captured_piece'] & 7
             piece_value = pst.get_piece_value(captured_type)
             if undo_info['captured_piece'] & 24 == WHITE:
-                self.value -= piece_value
-            else:
-                self.value += piece_value
+                piece_value = -piece_value
+            self.value += piece_value
             undo_info['piece_value'] = piece_value
         
         return undo_info
