@@ -314,8 +314,10 @@ class Board:
         self.to_move = BLACK if self.to_move == WHITE else WHITE
 
         # Update material and pst values
-        position_score = pst.get_piece_square_value(piece_type, move.to_row, move.to_col, piece & 24 == WHITE,False)
-        position_score -= pst.get_piece_square_value(piece_type, move.from_row, move.from_col, piece & 24 == WHITE,False)
+        position_score = pst.get_piece_square_value(piece_type, move.to_row, move.to_col, piece & 24 == WHITE, False)
+        position_score -= pst.get_piece_square_value(piece_type, move.from_row, move.from_col, piece & 24 == WHITE, False)
+        position_score = position_score if piece & 24 == WHITE else -position_score
+        
         self.pst += position_score
         undo_info['pst_change'] = position_score
 
