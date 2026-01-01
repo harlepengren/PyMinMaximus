@@ -509,8 +509,8 @@ class KRKTablebase:
         import pickle
         with open(filename, 'rb') as f:
             self.table = pickle.load(f)
-        print(f"Tablebase loaded from {filename}")
-        print(f"Positions in tablebase: {len(self.table):,}")
+        #print(f"Tablebase loaded from {filename}")
+        #print(f"Positions in tablebase: {len(self.table):,}")
 
 
 def square_name(square):

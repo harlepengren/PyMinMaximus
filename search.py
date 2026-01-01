@@ -118,7 +118,7 @@ class SearchEngine:
             self.krk_tablebase = KRKTablebase()
             table_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tablebase/krk_tablebase.pkl')
             self.krk_tablebase.load(table_path)
-            print("KRK tablebase loaded successfully")
+            #print("KRK tablebase loaded successfully")
         except:
             # Generate if not found
             print("Generating KRK tablebase...")
