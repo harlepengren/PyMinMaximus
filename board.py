@@ -590,9 +590,12 @@ class Board:
                         self.white_king_pos = (7 - row_idx, col_idx - 1)
                     elif self.board[7 - row_idx][col_idx - 1] == (BLACK | KING):
                         self.black_king_pos = (7 - row_idx, col_idx - 1)
+                    
+                    piece_color = piece_map[char] & 24
 
-                    self.pst += pst.get_piece_square_value(piece_map[char] & 7, 7 - row_idx, col_idx - 1,piece_map[char] & 24 == WHITE,False)
-                    self.value += pst.get_piece_value(piece_map[char] & 7)
+                    piece_sign = 1 if piece_color == WHITE else -1
+                    self.pst += pst.get_piece_square_value(piece_map[char] & 7, 7 - row_idx, col_idx - 1, piece_color == WHITE, False) * piece_sign
+                    self.value += pst.get_piece_value(piece_map[char] & 7) * piece_sign
         
         # Parse side to move
         self.to_move = WHITE if parts[1] == 'w' else BLACK
