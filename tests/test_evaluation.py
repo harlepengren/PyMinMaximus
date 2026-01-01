@@ -3,6 +3,7 @@ from board import Board
 from evaluation import Evaluator
 from move import Move
 from constants import *
+import pst
 
 class TestEvaluation(unittest.TestCase):
     def test_evaluation(self):
@@ -60,7 +61,6 @@ class TestEvaluation(unittest.TestCase):
             
             # Material only
             material_eval = Evaluator()
-            material_eval.piece_values = evaluator.piece_values
             material_score = 0
             for row in range(8):
                 for col in range(8):
@@ -68,14 +68,15 @@ class TestEvaluation(unittest.TestCase):
                     if piece != EMPTY:
                         piece_type = piece & 7
                         color = piece & 24
-                        value = material_eval.piece_values[piece_type]
+                        value = pst.get_piece_value(piece_type)
                         if color == WHITE:
                             material_score += value
                         else:
                             material_score -= value
             
-            print(f"  Material: {material_score:+d}")
-            print(f"  Positional: {score - material_score:+d}")
+            print(f"  Board Material Value: {board.value:+d}")
+            print(f"  Calculated Material: {material_score:+d}")
+            self.assertEqual(board.value, material_score)
 
 
     def test_positions(self):
