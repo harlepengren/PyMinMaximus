@@ -294,8 +294,8 @@ class Evaluator:
         is_endgame = self.is_endgame(board)
         
         # 1. Material and piece-square tables
-        #score += board.pst
-        #score += board.value
+        score += board.pst
+        score += board.value
         
         # 2. Pawn structure
         score += self.evaluate_pawn_structure(board)
