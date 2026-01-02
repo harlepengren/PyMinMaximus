@@ -472,6 +472,12 @@ class SearchEngine:
         for move in moves:
             if self.stop:
                 break
+
+            if len(self.board.move_stack) > 1:
+                # Skip the last move
+                last_move = self.board.move_stack[-2]
+                if move.to_row == last_move.from_row and move.to_col == last_move.from_col:
+                    continue
             
             undo_info = self.board.make_move(move)
             eval_score = self.alphabeta(depth - 1, alpha, beta, False)
