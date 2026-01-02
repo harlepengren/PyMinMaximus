@@ -379,7 +379,7 @@ class Board:
         self.halfmove_clock = undo_info['halfmove_clock']
 
         self.pst -= undo_info.get('pst_change',0)
-        self.value += undo_info.get('piece_value',0)
+        self.value -= undo_info.get('piece_value',0)
 
     def convert_uci(self, move_str:str)->Move:
         """Converts a move from UCI to Move. No guarantees that the move
