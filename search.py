@@ -357,6 +357,7 @@ class SearchEngine:
                 return score
         
         alpha_orig = alpha
+        beta_orig = beta  # Save original beta for minimizing player
         
         # Check transposition table
         tt_hit, tt_score = self.tt.probe(self.board, depth, alpha, beta)
@@ -410,10 +411,10 @@ class SearchEngine:
                     return 0
             
             # Store in transposition table
-            if max_eval <= alpha_orig:
-                flag = 'upperbound'
-            elif max_eval >= beta:
-                flag = 'lowerbound'
+            if max_eval >= beta:
+                flag = 'lowerbound'  # Beta cutoff
+            elif max_eval <= alpha_orig:
+                flag = 'upperbound'  # Failed to raise alpha
             else:
                 flag = 'exact'
             self.tt.store(self.board, depth, max_eval, flag)
@@ -447,10 +448,10 @@ class SearchEngine:
                     return 0
             
             # Store in transposition table
-            if min_eval <= alpha_orig:
-                flag = 'upperbound'
-            elif min_eval >= beta:
-                flag = 'lowerbound'
+            if min_eval <= alpha:
+                flag = 'upperbound'  # Alpha cutoff
+            elif min_eval >= beta_orig:
+                flag = 'lowerbound'  # Failed to lower beta
             else:
                 flag = 'exact'
             self.tt.store(self.board, depth, min_eval, flag)
