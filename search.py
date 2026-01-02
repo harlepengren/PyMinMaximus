@@ -6,6 +6,7 @@ from opening_book import OpeningBook
 import os
 import threading
 import pst
+import zobrist
 
 lock = threading.Lock()
 
@@ -14,34 +15,10 @@ class TranspositionTable:
         # Approximate number of entries based on memory
         self.size = (size_mb * 1024 * 1024) // 100  # rough estimate
         self.table = {}
+        self.zobrist_hash = zobrist.ZobristHash()
     
     def get_hash(self, board):
-        """Fast numeric hash of board position."""
-        h = 0
-        
-        # Hash board position
-        for row in range(8):
-            for col in range(8):
-                piece = board.board[row][col]
-                if piece != EMPTY:  # Skip empty squares
-                    h = h * 31 + (row * 8 + col) * 16 + piece
-        
-        # Hash game state (simpler than before)
-        h ^= board.to_move << 20
-        
-        if board.castling_rights['K']:
-            h ^= 1 << 24
-        if board.castling_rights['Q']:
-            h ^= 1 << 25
-        if board.castling_rights['k']:
-            h ^= 1 << 26
-        if board.castling_rights['q']:
-            h ^= 1 << 27
-        
-        if board.en_passant_square:
-            h ^= (board.en_passant_square[0] * 8 + board.en_passant_square[1]) << 28
-        
-        return h & 0xFFFFFFFFFFFFFFFF
+        return self.zobrist_hash.hash_position(board)
     
     def store(self, board, depth, score, flag):
         hash_key = self.get_hash(board)
