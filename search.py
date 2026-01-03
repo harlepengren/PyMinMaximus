@@ -380,7 +380,7 @@ class SearchEngine:
             
             if not legal_move_found:
                 if self.board.is_in_check(self.board.to_move):
-                    return 20000 - depth
+                    return -20000 - depth
                 else:
                     return 0
             
@@ -415,7 +415,7 @@ class SearchEngine:
             
             if not legal_move_found:
                 if self.board.is_in_check(self.board.to_move):
-                    return -20000 - depth  # Changed
+                    return 20000 - depth
                 else:
                     return 0
             
