@@ -21,6 +21,7 @@ def play_random():
     board = Board()
     engine = SearchEngine(board)
     pyminmax_think_time = 0.0
+    num_moves = 0
 
     print("Playing a game against Random Move Generator\n")
     # Randomly assign colors
@@ -41,6 +42,7 @@ def play_random():
             best_move, score = engine.find_best_move_alphabeta(6)
             pyminmax_think_time += time.perf_counter() - start
             print(f"PyMinMaximus plays: {best_move} (eval: {score:+d})")
+            moves += 1
         else:
             best_move = get_random_move(board)
             print(f"Random Move Generator plays: {best_move}")
@@ -58,6 +60,7 @@ def play_random():
     else:
         print("Stalemate!")
     print(f"Total PyMinMaximus think time: {pyminmax_think_time:.2f} seconds")
+    print(f"Total moves played: {num_moves}, {pyminmax_think_time/num_moves:.2f} seconds/move")
 
 def play_game(think_time):
     """Play a game against PyMinMaximus."""
