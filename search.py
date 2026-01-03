@@ -470,7 +470,7 @@ class SearchEngine:
 
             if len(self.board.move_stack) > 1:
                 # Skip the last move
-                last_move = self.board.move_stack[-2]
+                last_move = self.board.move_stack[-2][0]
                 if move.to_row == last_move.from_row and move.to_col == last_move.from_col:
                     continue
             
