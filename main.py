@@ -42,7 +42,7 @@ def play_random():
             best_move, score = engine.find_best_move_alphabeta(6)
             pyminmax_think_time += time.perf_counter() - start
             print(f"PyMinMaximus plays: {best_move} (eval: {score:+d})")
-            moves += 1
+            num_moves += 1
         else:
             best_move = get_random_move(board)
             print(f"Random Move Generator plays: {best_move}")
