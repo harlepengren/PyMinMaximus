@@ -334,7 +334,7 @@ class SearchEngine:
                 return score
         
         alpha_orig = alpha
-        beta_orig = beta  # Save original beta for minimizing player
+        beta_orig = beta
         
         # Check transposition table
         tt_hit, tt_score = self.tt.probe(self.board, depth, alpha, beta)
@@ -347,17 +347,18 @@ class SearchEngine:
             score = self.evaluator.evaluate_relative(self.board)
             return score
         
-        # Generate and order pseudo-legal moves (no legality check yet!)
+        # Generate and order pseudo-legal moves
         pseudo_moves = self.board.generate_pseudo_legal_moves()
         
         if len(pseudo_moves) == 0:
             # No moves at all - checkmate or stalemate
             if self.board.is_in_check(self.board.to_move):
-                return -20000 + (10 - depth)
+                # Being mated is bad for us, good for opponent
+                # Return negative score that gets worse the deeper we are
+                return -20000 - depth  # Changed: negative + worse with depth
             else:
                 return 0
         
-        # Order moves BEFORE filtering for legality
         ordered_moves = self.order_moves(pseudo_moves)
         
         if maximizing_player:
@@ -365,7 +366,6 @@ class SearchEngine:
             legal_move_found = False
             
             for move in ordered_moves:
-                # Check legality only when we're about to search it
                 if not self.board.is_legal_move(move):
                     continue
                 
@@ -380,18 +380,17 @@ class SearchEngine:
                 if beta <= alpha:
                     break
             
-            # If no legal moves found, it's checkmate or stalemate
             if not legal_move_found:
                 if self.board.is_in_check(self.board.to_move):
-                    return -20000 + (10 - depth)
+                    return -20000 - depth
                 else:
                     return 0
             
             # Store in transposition table
             if max_eval >= beta:
-                flag = 'lowerbound'  # Beta cutoff
+                flag = 'lowerbound'
             elif max_eval <= alpha_orig:
-                flag = 'upperbound'  # Failed to raise alpha
+                flag = 'upperbound'
             else:
                 flag = 'exact'
             self.tt.store(self.board, depth, max_eval, flag)
@@ -402,7 +401,6 @@ class SearchEngine:
             legal_move_found = False
             
             for move in ordered_moves:
-                # Check legality only when we're about to search it
                 if not self.board.is_legal_move(move):
                     continue
                 
@@ -417,18 +415,17 @@ class SearchEngine:
                 if beta <= alpha:
                     break
             
-            # If no legal moves found, it's checkmate or stalemate
             if not legal_move_found:
                 if self.board.is_in_check(self.board.to_move):
-                    return -20000 + (10 - depth)
+                    return -20000 - depth  # Changed
                 else:
                     return 0
             
             # Store in transposition table
             if min_eval <= alpha:
-                flag = 'upperbound'  # Alpha cutoff
+                flag = 'upperbound'
             elif min_eval >= beta_orig:
-                flag = 'lowerbound'  # Failed to lower beta
+                flag = 'lowerbound'
             else:
                 flag = 'exact'
             self.tt.store(self.board, depth, min_eval, flag)
