@@ -103,6 +103,8 @@ class UCIHandler:
                 move = self.board.convert_uci(move_str)
                 if move:
                     self.board.make_move(move)
+                else:
+                    print(f"# Warning: Invalid move '{move_str}' ignored.")
         
         # Update engine with new position
         self.engine.board = self.board
