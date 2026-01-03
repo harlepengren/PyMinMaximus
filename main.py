@@ -6,6 +6,58 @@ from evaluation import Evaluator
 from move import Move
 from constants import *
 import time
+import random
+
+def get_random_move(board):
+    """Get a random legal move from the board."""
+    legal_moves = board.generate_legal_moves()
+    if legal_moves:
+        return random.choice(legal_moves)
+    return None
+
+def play_random():
+    """Play a game against a random move generator.
+    """
+    board = Board()
+    engine = SearchEngine(board)
+    pyminmax_think_time = 0.0
+
+    print("Playing a game against Random Move Generator\n")
+    # Randomly assign colors
+    if random.choice([True, False]):
+        pyminmax_player = WHITE
+        random_player = BLACK
+        print("PyMinMaximus is White\n")
+    else:
+        pyminmax_player = BLACK
+        random_player = WHITE
+        print("PyMinMaximus is Black\n")
+
+    moves = board.generate_legal_moves()
+    while len(moves) > 0:
+        print(board)
+        if board.to_move == pyminmax_player:
+            start = time.perf_counter()
+            best_move, score = engine.find_best_move_alphabeta(6)
+            pyminmax_think_time += time.perf_counter() - start
+            print(f"PyMinMaximus plays: {best_move} (eval: {score:+d})")
+        else:
+            best_move = get_random_move(board)
+            print(f"Random Move Generator plays: {best_move}")
+
+        if best_move:
+            board.make_move(best_move)
+
+        moves = board.generate_legal_moves()
+    
+    print("Game Over!")
+    print(board)
+    if board.is_in_check(board.to_move):
+        winner = "PyMinMaximus" if board.to_move != pyminmax_player else "Random Move Generator"
+        print(f"Checkmate! {winner} wins!")
+    else:
+        print("Stalemate!")
+    print(f"Total PyMinMaximus think time: {pyminmax_think_time:.2f} seconds")
 
 def play_game(think_time):
     """Play a game against PyMinMaximus."""
