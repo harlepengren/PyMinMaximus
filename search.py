@@ -351,11 +351,9 @@ class SearchEngine:
         pseudo_moves = self.board.generate_pseudo_legal_moves()
         
         if len(pseudo_moves) == 0:
-            # No moves at all - checkmate or stalemate
+            # Impossible since we are looking at pseudo moves
             if self.board.is_in_check(self.board.to_move):
-                # Being mated is bad for us, good for opponent
-                # Return negative score that gets worse the deeper we are
-                return -20000 - depth  # Changed: negative + worse with depth
+                return -20000 - depth
             else:
                 return 0
         
@@ -382,7 +380,7 @@ class SearchEngine:
             
             if not legal_move_found:
                 if self.board.is_in_check(self.board.to_move):
-                    return -20000 - depth
+                    return 20000 - depth
                 else:
                     return 0
             
