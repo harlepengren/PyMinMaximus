@@ -1,18 +1,16 @@
 import subprocess
+import sys
 
-def run_rating_gauntlet():
+def run_rating_gauntlet(tcontrol="40/60", rounds=20):
     """
     Run PyMinMaximus against a series of opponents with known ratings.
     This helps establish an accurate ELO.
     """
     
     opponents = [
-        #("../random_engine.py", "RandomMover", "", "~400 ELO"),
+        ("../random_engine.py", "RandomMover", "", "~400 ELO"),
         ("stockfish", "Stockfish-0", "option.Skill Level=0", "~800 ELO"),
-        ("fairy-stockfish", "Fairy-Weak", "option.Skill Level=5", "~1200 ELO"),
-        # Add more opponents as available:
-        # ("stockfish", "Stockfish-0", "option.Skill Level=0", "~800 ELO"),
-        # ("fairy-stockfish", "Fairy-Weak", "option.Skill Level=5", "~1200 ELO"),
+        ("stockfish", "Fairy-Weak", "option.Skill Level=5", "~1200 ELO"),
     ]
     
     results = []
@@ -26,8 +24,8 @@ def run_rating_gauntlet():
             'cutechess-cli',
             '-engine', 'cmd=../pyminmaximus.py', 'name=PyMinMaximus',
             '-engine', f'cmd={opp_cmd}', f'name={opp_name}', opp_options,
-            '-each', 'proto=uci', 'tc=40/60',
-            '-rounds', '20',
+            '-each', 'proto=uci', f'tc={tcontrol}',
+            '-rounds', str(rounds),
             '-repeat',
             '-pgnout', f'results/vs_{opp_name}.pgn'
         ]
@@ -51,4 +49,17 @@ def run_rating_gauntlet():
 
 
 if __name__ == "__main__":
-    run_rating_gauntlet()
+    if sys.argc > 1:
+        argument_dict = dict(sys.argv[1:])
+
+    if "tc" in argument_dict:
+        tcontrol = argument_dict["tc"]
+    else:
+        tcontrol = "40/60"
+
+    if "rounds" in argument_dict:
+        rounds = int(argument_dict["rounds"])
+    else:
+        rounds = 20
+
+    run_rating_gauntlet(tcontrol=tcontrol, rounds=rounds)
