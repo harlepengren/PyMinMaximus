@@ -7,7 +7,7 @@ def run_rating_gauntlet():
     """
     
     opponents = [
-        ("../random_engine.py", "RandomMover", "~400 ELO"),
+        #("../random_engine.py", "RandomMover", "~400 ELO"),
         ("stockfish", "Stockfish-0", "~800 ELO", ["-skill", "0"]),
         ("fairy-stockfish", "Fairy-Weak", "~1200 ELO", ["-skill", "5"]),
         # Add more opponents as available:
@@ -36,7 +36,7 @@ def run_rating_gauntlet():
         
         # Analyze results
         from analyze_results import analyze_tournament
-        analyze_tournament(f'vs_{opp_name}.pgn')
+        analyze_tournament(f'results/vs_{opp_name}.pgn')
         
         results.append((opp_name, opp_rating))
     
