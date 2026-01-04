@@ -49,7 +49,7 @@ def run_rating_gauntlet(tcontrol="40/60", rounds=20):
 
 
 if __name__ == "__main__":
-    if sys.argc > 1:
+    if len(sys.argv) > 1:
         argument_dict = dict(sys.argv[1:])
 
     if "tc" in argument_dict:
