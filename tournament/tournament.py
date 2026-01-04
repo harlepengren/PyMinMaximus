@@ -22,7 +22,7 @@ def run_tournament(engine1_cmd, engine1_name, engine2_cmd, engine2_name,
         '-each', 'proto=uci', f'tc={time_control}',
         '-rounds', str(rounds),
         '-repeat',
-        '-pgnout', f'{engine1_name}_vs_{engine2_name}.pgn'
+        '-pgnout', f'results/{engine1_name}_vs_{engine2_name}.pgn'
     ]
     
     print("="*60)
