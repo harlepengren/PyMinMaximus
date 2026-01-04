@@ -7,7 +7,7 @@ def run_rating_gauntlet():
     """
     
     opponents = [
-        ("random_engine.py", "RandomMover", "~400 ELO"),
+        ("../random_engine.py", "RandomMover", "~400 ELO"),
         ("stockfish", "Stockfish-0", "~800 ELO", ["-skill", "0"]),
         ("fairy-stockfish", "Fairy-Weak", "~1200 ELO", ["-skill", "5"]),
         # Add more opponents as available:
@@ -24,7 +24,7 @@ def run_rating_gauntlet():
         
         cmd = [
             'cutechess-cli',
-            '-engine', 'cmd=pyminmaximus.py', 'name=PyMinMaximus',
+            '-engine', 'cmd=../pyminmaximus.py', 'name=PyMinMaximus',
             '-engine', f'cmd={opp_cmd}', f'name={opp_name}',
             '-each', 'proto=uci', 'tc=40/60',
             '-rounds', '20',
