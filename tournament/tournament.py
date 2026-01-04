@@ -37,8 +37,8 @@ def run_tournament(engine1_cmd, engine1_name, engine2_cmd, engine2_name,
 if __name__ == "__main__":
     # Test against random mover
     run_tournament(
-        "python pyminmaximus.py", "PyMinMaximus",
-        "python random_engine.py", "RandomMover",
+        "python3 ../pyminmaximus.py", "PyMinMaximus",
+        "python3 ../random_engine.py", "RandomMover",
         rounds=20,
         time_control="10:00"
     )
