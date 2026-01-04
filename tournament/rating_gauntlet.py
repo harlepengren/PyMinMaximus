@@ -29,7 +29,7 @@ def run_rating_gauntlet():
             '-each', 'proto=uci', 'tc=40/60',
             '-rounds', '20',
             '-repeat',
-            '-pgnout', f'vs_{opp_name}.pgn'
+            '-pgnout', f'results/vs_{opp_name}.pgn'
         ]
         
         subprocess.run(cmd)
