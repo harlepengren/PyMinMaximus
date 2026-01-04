@@ -7,17 +7,17 @@ def run_rating_gauntlet():
     """
     
     opponents = [
-        #("../random_engine.py", "RandomMover", "~400 ELO"),
-        ("stockfish", "Stockfish-0", "~800 ELO", ["-skill", "0"]),
-        ("fairy-stockfish", "Fairy-Weak", "~1200 ELO", ["-skill", "5"]),
+        #("../random_engine.py", "RandomMover", "", "~400 ELO"),
+        ("stockfish", "Stockfish-0", "option.Skill Level=0", "~800 ELO"),
+        ("fairy-stockfish", "Fairy-Weak", "option.Skill Level=5", "~1200 ELO"),
         # Add more opponents as available:
-        # ("stockfish", "Stockfish-0", "~800 ELO", ["-skill", "0"]),
-        # ("fairy-stockfish", "Fairy-Weak", "~1200 ELO", ["-skill", "5"]),
+        # ("stockfish", "Stockfish-0", "option.Skill Level=0", "~800 ELO"),
+        # ("fairy-stockfish", "Fairy-Weak", "option.Skill Level=5", "~1200 ELO"),
     ]
     
     results = []
     
-    for opp_cmd, opp_name, opp_rating in opponents:
+    for opp_cmd, opp_name, opp_options, opp_rating in opponents:
         print(f"\n{'='*60}")
         print(f"Testing vs {opp_name} ({opp_rating})")
         print(f"{'='*60}\n")
@@ -25,7 +25,7 @@ def run_rating_gauntlet():
         cmd = [
             'cutechess-cli',
             '-engine', 'cmd=../pyminmaximus.py', 'name=PyMinMaximus',
-            '-engine', f'cmd={opp_cmd}', f'name={opp_name}',
+            '-engine', f'cmd={opp_cmd}', f'name={opp_name}', opp_options,
             '-each', 'proto=uci', 'tc=40/60',
             '-rounds', '20',
             '-repeat',
