@@ -40,5 +40,7 @@ if __name__ == "__main__":
         "../pyminmaximus.py", "PyMinMaximus",
         "../random_engine.py", "RandomMover",
         rounds=20,
-        time_control="10:00"
+        time_control="40/60"
+        # alternative
+        # time_control="10:00"
     )
