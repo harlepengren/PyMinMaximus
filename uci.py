@@ -241,6 +241,8 @@ class UCIHandler:
                 # Reinitialize if needed
                 if option_name in ['OwnBook', 'BookFile']:
                     self._init_engine()
+        print("uciok")
+        sys.stdout.flush()
     
     def run(self):
         """Main UCI loop - read commands and respond."""
