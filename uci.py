@@ -30,6 +30,7 @@ class UCIHandler:
             'Hash': 64,  # MB for transposition table
             'OwnBook': True,  # Use opening book
             'BookFile': bookfile,
+            'Move Overhead': 30,  # ms
         }
         
         # Initialize components
@@ -58,6 +59,7 @@ class UCIHandler:
         print("option name Hash type spin default 64 min 1 max 1024")
         print("option name OwnBook type check default true")
         print("option name BookFile type string default books/performance.bin")
+        print("option name Move Overhead type spin default 30 min 0 max 1000")
         
         print("uciok")
         sys.stdout.flush()
